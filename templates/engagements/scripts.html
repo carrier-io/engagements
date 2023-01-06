@@ -1,0 +1,16 @@
+<script src="{{ url_for('engagements.static', filename='js/vendor/bootstrap-table.min.js') }}"></script>
+<script src="{{ url_for('engagements.static', filename='js/vendor/jquery.serialize-object.min.js') }}"></script>
+<script src="{{ url_for('engagements.static', filename='js/vendor/axios.min.js') }}"></script>
+<script src="{{ url_for('engagements.static', filename='js/dropdown.js') }}"></script>
+
+<script>
+    view_url = '{{ url_for("theme.route_section_subsection_page", section="orch_tool", subsection="engagements", page="view").rstrip('/') }}';
+    kanban_url = '{{ url_for("theme.route_section_subsection", section="orch_tool", subsection="kanban") }}'
+    boards_url = '{{ url_for("api.v1.kanban.boards") }}'
+    engagements_url = '{{ url_for("api.v1.engagements.engagements", project_id=project_id) }}'
+</script>
+
+<script src="{{ url_for('engagements.static', filename='js/engagements.js') }}"></script>
+
+
+

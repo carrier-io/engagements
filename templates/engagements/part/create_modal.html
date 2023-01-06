@@ -1,0 +1,91 @@
+<div id="create_modal" class="modal modal-small fixed-left fade shadow-sm" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-aside" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="row w-100">
+                    <div class="col">
+                        <h2>Create  Engagement</h2>
+                    </div>
+                    <div class="col-xs">
+                        <button type="button" class="btn  btn-secondary mr-2" data-dismiss="modal" aria-label="Close">
+                            Cancel
+                        </button>
+                        <button type="button" id="save" class="btn btn-basic">Save</button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <form id="form-create">
+                    <div class="section">
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    <label for="input-name">Engagement Name</label>
+                                    <input type="text" class="form-control" name="name" id="input-name">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    <label for="text-goal">Goal</label>
+                                    <textarea class="form-control" name="goal" rows="8" id="text-goal"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col">
+                              <div class="form-group">
+                                <label for="select-status">Status</label>
+                                    <select class="form-control" name="status" id="select-status">
+                                        <option value="new">new</option>
+                                        <option value="in_progress">in progress</option>
+                                        <option value="done">done</option>
+                                    </select>
+                              </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    <label for="input-project">Start Date</label>
+                                    <input type="date" name="start_date" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                                    <label for="input-project">End Date</label>
+                                    <input type="date" name="end_date" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">                        
+                            <div class="form-group">
+                                <label for="select-status">Boards</label>
+                                <div class="row">
+                                    <div class="col">
+                                        <multiselect-filter
+                                            @register="register"
+                                            instance_name="kanban_boards_select"
+                                            :title="'Select boards'"
+                                        ></multiselect-filter>
+                                    </div>
+                                    <!-- <div class="col">
+                                        <a href="" type="button" class="btn  btn-secondary mr-2" data-dismiss="modal" aria-label="Close">
+                                            New Board
+                                        </a> 
+                                    </div> -->
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
