@@ -1,0 +1,49 @@
+<div id="content">
+    <div class="container-fluid">
+      <div class="card card-table-sm mt-3">
+        <div class="card-header">
+          <div class="row">
+            <div class="col-4">
+                <h4>Engagements</h4>
+            </div>
+            <div class="col-8">
+              <div class="d-flex justify-content-end">
+                  <button type="button" class="btn btn-secondary btn-sm btn-icon__sm mr-2" data-toggle="modal" data-target="#create_modal"><i class="fas fa-plus"></i></button>
+                  <button type="button" class="btn btn-secondary btn-sm btn-icon__sm mr-2"><i class="fas fa-sync"></i></button>
+                  <button type="button" class="btn btn-secondary btn-sm btn-icon__sm mr-2"><i class="fas fa-filter"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+          <div class="card-body card-tableless">
+            <table class="table table-border"
+                id="table"
+                data-url = "/api/v1/engagements/engagements/{{project_id}}"
+                data-toggle="table"
+                data-unique-id="id"
+                data-virtual-scroll="true"
+                data-data-field="items"
+                data-pagination="true"
+                data-page-list="[10, 25, 50, 100, all]"
+                data-side-pagination="server"
+                data-pagination-pre-text="<img src='/design-system/static/assets/ico/arrow_left.svg'>"
+                data-pagination-next-text="<img src='/design-system/static/assets/ico/arrow_right.svg'>"
+            >
+                <thead class="thead-light">
+                    <tr>
+                        <th data-field="name">Name</th>
+                        <th data-field="goal">Goal</th>
+                        <th data-field="start_date">Start Date</th>
+                        <th data-field="end_date">End Date</th>
+                        <th data-field="status">Status</th>
+                        <th scope="col" data-align="right" data-cell-style="cellStyle" data-formatter="actionsFormatter" data-events="actionsEvents">Actions</th>
+                    </tr>
+                </thead>
+            </table>
+          </div>
+        </div>
+    </div>
+</div>
+
+{% include "engagements:engagements/part/create_modal.html" %}
+{% include "engagements:engagements/part/edit_modal.html" %}

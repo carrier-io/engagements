@@ -1,0 +1,84 @@
+<div class="p-3">
+    <div class="flex-container">
+        <div class="flex-item-2">
+            <div class="card card-x h-100">
+                <div class="card-header">
+                    <h2>Details</h2>
+                </div>
+                <div class="card-body">
+                    <div class="pl-2">
+                        <h5>Name</h5>
+                        <p class="pl-1">{{engagement.name | safe}}</p>
+                        <h5>Goal</h5>
+                        <p class="pl-1">{{engagement.goal | safe}}</p>
+                        <h5>Status</h5>
+                        <p class="pl-1">{{engagement.status | safe}}</p>
+                        <h5>Start Date</h5>
+                        <p class="pl-1">{{engagement.start_date | safe}}</p>
+                        <h5>End Date</h5>
+                        <p class="pl-1">{{engagement.end_date | safe}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="flex-item-2">
+            <Table-Card
+                    @register="register"
+                    instance_name="engagement_tests"
+                    header='Application Tests'
+                    :table_attributes="{
+                        'data-url': '{{ url_for('api.v1.security.tests', project_id=tools.session_project.get()) }}',
+                        'data-page-size': 5,
+                        id: 'engagement_tests_table'
+                    }"
+                    container_classes="h-100"
+            >
+                <template #table_headers>
+                    <th scope="col" data-checkbox="true"></th>
+                    <th scope="col" data-sortable="true" data-field="name">Name</th>
+                    <th scope="col" data-sortable="true" data-field="urls_to_scan"
+                        data-width="240" data-width-unit="px"
+                        data-formatter="tableFormatters.application_urls"
+                    >Urls</th>
+                    <th scope="col" data-sortable="true" data-field="test_uid" data-visible="false">Uuid</th>
+                    <th scope="col" data-sortable="true" data-field="integrations"
+                        data-formatter="tableFormatters.tests_tools"
+                    >
+                        Tools
+                    </th>
+                    <th scope="col"
+                        data-align="right"
+                        data-events="tableFormatters.status_events"
+                        data-formatter="tableFormatters.tests_actions"
+                        data-width="100" data-width-unit="px"
+                    >
+                        Actions
+                    </th>
+                </template>
+            </Table-Card>
+        </div>
+    </div>
+
+    <Table-Card
+            @register="register"
+            instance_name="engagement_issues"
+            header='Issues'
+            :table_attributes="{
+                'data-url': '{{ url_for('api.v1.issues.issues', project_id=project_id) }}?engagement={{ engagement.hash_id }}',
+                id: 'engagement_issues'
+            }"
+            container_classes="mt-3"
+    >
+        <template #table_headers>
+            <th data-field="snapshot.title">Title</th>
+            <th data-field="severity">Severity</th>
+            <th data-field="type">Type</th>
+            <th data-field="project">Project</th>
+            <th data-field="asset">Asset</th>
+            <th data-field="source.module">Source</th>
+            <th data-field="status">Status</th>
+            <th data-field="state.value">State</th>
+            <th data-field="tags">Tags</th>
+        </template>
+    </Table-Card>
+</div>

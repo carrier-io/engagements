@@ -1,0 +1,14 @@
+<script src="{{ url_for('engagements.static', filename='js/vendor/bootstrap-table.min.js') }}"></script>
+<script src="{{ url_for('engagements.static', filename='js/vendor/jquery.serialize-object.min.js') }}"></script>
+<script src="{{ url_for('engagements.static', filename='js/vendor/axios.min.js') }}"></script>
+<script src="{{ url_for('engagements.static', filename='js/tests.js') }}"></script>
+
+<script>
+    security_app_url = "{{ url_for('theme.route_section_subsection', section='security', subsection='app').rstrip() }}?engagement={{ engagement.hash_id }}"
+</script>
+
+
+
+
+
+
