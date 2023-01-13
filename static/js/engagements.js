@@ -76,7 +76,7 @@ function actionsFormatter(value, row, index) {
       '<a class="kanban-board-url mr-3" href="'+ kanban_url + '?engagement='+row.hash_id +'" title="Kanban Boards">',
       '<i class="fa-brands fa-trello" style="color: #858796"></i>',
       '</a>',
-      '<a class="mr-3" href="' + view_url + '?id=' + row.id + '" title="View">',
+      '<a class="mr-3" href="' + view_url + '?id=' + row.id + '&hash_id=' + row.hash_id +'" title="View">',
       '<i class="fa fa-eye" style="color: #858796"></i>',
       '</a>',
       '<a class="edit-event mr-3" href="javascript:void(0)" title="Edit">',
@@ -96,12 +96,10 @@ window.actionsEvents = {
         $.each($("form#form-edit .form-control"), (ind, tag)  => {
             tag.value = row[tag.name]
         })
-
         multiselect = vueVm.registered_components.edit_boards_select
         items = boardsList.filter(board => row.kanban_boards.includes(board['id']))
         multiselect.selectedItems = items
         multiselect.itemsList = boardsList
-        
     },
 
     "click .delete-event": function (e, value, row, index) {
