@@ -53,6 +53,7 @@
                                         </th>
                                         <th scope="col"
                                             data-align="right"
+                                            data-events="tableFormatters.status_events"
                                             data-formatter="tableFormatters.tests_actions"
                                             data-width="100" data-width-unit="px"
                                         >
@@ -80,29 +81,32 @@
                                         <th scope="col" data-checkbox="true"></th>
                                         <th data-visible="false" data-field="id">index</th>
                                         <th scope="col" data-sortable="true"
-                                            data-cell-style="test_formatters.name_style"
+                                            data-cell-style="backend_perf_test_formatters.name_style"
                                             data-field="name"
                                         >
                                             Name
                                         </th>
                                         <th scope="col" data-sortable="true"
-                                            data-cell-style="test_formatters.name_style"
+                                            data-cell-style="backend_perf_test_formatters.name_style"
                                             data-field="test_uid">
                                             UUID
                                         </th>
                                         <th scope="col" data-sortable="true"
-                                            data-cell-style="test_formatters.name_style"
+                                            data-cell-style="backend_perf_test_formatters.name_style"
                                             data-field="entrypoint"
                                         >
                                             Entrypoint
                                         </th>
                                         <th scope="col" data-align="center" data-sortable="true"
-                                            data-formatter=test_formatters.job_type
+                                            data-formatter=backend_perf_test_formatters.job_type
                                             data-field="job_type"
                                         >
                                             Tool
                                         </th>
-                                        <th scope="col" data-align="right" data-formatter=test_formatters.actions>
+                                        <th scope="col" data-align="right" 
+                                            data-formatter=backend_perf_test_formatters.actions
+                                            data-events="backend_perf_test_formatters.action_events"
+                                        >
                                             Actions
                                         </th>
                                     </tr>
@@ -150,7 +154,10 @@
                                         >
                                             Tool
                                         </th>
-                                        <th scope="col" data-align="right" data-formatter=ui_test_formatters.actions>
+                                        <th scope="col" data-align="right" 
+                                            data-formatter=ui_test_formatters.actions
+                                            data-events="ui_test_formatters.action_events"
+                                            >
                                             Actions
                                         </th>
                                     </tr>
@@ -296,3 +303,7 @@
         </template>
     </Table-Card>
 </div>
+
+
+{% include 'engagements:tests/ui_runtest.html' %}
+{% include 'engagements:tests/back_perf_runtest.html' %}

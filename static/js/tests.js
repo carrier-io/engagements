@@ -1,3 +1,4 @@
+
 function engagementQueryParams(params){
     const urlSearchParams = new URLSearchParams(window.location.search);
     const currentParams = Object.fromEntries(urlSearchParams.entries());
@@ -61,7 +62,10 @@ var ui_test_formatters = {
     actions(value, row, index) {
         return `
             <div class="d-flex justify-content-end">
-                <a href="${ui_perf_url}&test_uid=${row.test_uid}"  id="test_view"><i class="fa fa-eye"></i></a>
+                <button class="btn btn-default btn-xs btn-table btn-icon__xs test_run mr-2"
+                    data-toggle="tooltip" data-placement="top" title="Run Test">
+                    <i class="icon__18x18 icon-run"></i>
+                </button>
             </div>
         `
     },
@@ -75,9 +79,16 @@ var ui_test_formatters = {
             }
         }
     },
+    action_events: {
+        "click .test_run": function (e, value, row, index) {
+            console.log('test_run', row)
+            const component_proxy = vueVm.registered_components.ui_run_modal
+            component_proxy.set({...row, test_parameters: row.test_parameters})
+        },
+    }
 }
 
-var test_formatters = {
+var backend_perf_test_formatters = {
     job_type(value, row, index) {
         if (row.job_type === "perfmeter") {
             return '<img src="/design-system/static/assets/ico/jmeter.png" width="20">'
@@ -91,7 +102,10 @@ var test_formatters = {
     actions(value, row, index) {
         return `
             <div class="d-flex justify-content-end">
-                <a href="${backend_perf_url}&test_uid=${row.test_uid}"  id="test_view"><i class="fa fa-eye"></i></a>
+                <button class="btn btn-default btn-xs btn-table btn-icon__xs test_run mr-2"
+                    data-toggle="tooltip" data-placement="top" title="Run Test">
+                    <i class="icon__18x18 icon-run"></i>
+                </button>
             </div>
         `
     },
@@ -111,12 +125,19 @@ var test_formatters = {
                 "min-width": "165px"
             }
         }
+    },
+    action_events: {
+        "click .test_run": function (e, value, row, index) {
+            // apiActions.run(row.id, row.name)
+            console.log('test_run', row)
+            const component_proxy = vueVm.registered_components.back_run_modal
+            component_proxy.set({...row, test_parameters: row.test_parameters})
+        }
     }
 }
 
 var tableFormatters = {
     reports_test_name_button(value, row, index) {
-        console.log(security_results_url)
         return `<a href="${security_results_url}?result_id=${row.id}" role="button">${row.name}</a>`
     },
     reports_status_formatter(value, row, index) {
@@ -141,9 +162,17 @@ var tableFormatters = {
     tests_actions(value, row, index) {
         return `
             <div class="d-flex justify-content-end">
-                <a href="${security_app_url}&test_uid=${row.test_uid}"  id="test_view"><i class="fa fa-eye"></i></a>
+                <button id="sec_test_run" class="btn btn-default btn-xs btn-table btn-icon__xs test_run mr-2"
+                    data-toggle="tooltip" data-placement="top" title="Run Test">
+                    <i class="icon__18x18 icon-run"></i>
+                </button>
             </div>
         `
+    },
+    status_events: {
+        "click #sec_test_run": function (e, value, row, index) {
+            apiActions.run(row.id, row.name)
+        }
     },
     tests_tools(value, row, index) {
         // todo: fix
@@ -225,10 +254,9 @@ var apiActions = {
         alertCreateTest?.clear()
     },
     afterSave: () => {
-        $("#engagement_tests_table").bootstrapTable('refresh')
-        $("#results_table").bootstrapTable('refresh')
         $("#security_test_save").removeClass("disabled updating")
         $("#security_test_save_and_run").removeClass("disabled updating")
+        $('#engagement_security_tests_results_table').bootstrapTable('refresh')
     },
 }
 
@@ -243,7 +271,6 @@ $(document).on('vue_init', () => {
     $("#engagement_tests_table").on('all.bs.table', initTooltips)
     $(".switch-tabs").on('click', function(){
         activeTabId = `results-${this.id}`
-        console.log(activeTabId)
         toggleTabs('results-card', activeTabId)
     })
 })
