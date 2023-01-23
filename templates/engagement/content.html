@@ -1,64 +1,285 @@
 <div class="p-3">
     <div class="flex-container">
         <div class="flex-item-2">
-            <div class="card card-x h-100">
+
+            <div class="card card-table-sm h-100">
                 <div class="card-header">
-                    <h2>Details</h2>
+                    <div class="row">
+                        <div class="col-4">
+                            <h4>Application tests</h4>
+                        </div>
+                        <div class="col-8">
+                            <ul class="custom-tabs nav nav-pills d-flex justify-content-end" id="tests-tab" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <a class="switch-tabs active" id="security-tests-tab" data-toggle="pill" href="#security-tests" role="tab" aria-controls="pills-home" aria-selected="true">Security</a>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <a class="switch-tabs" id="back-perf-tests-tab" data-toggle="pill" href="#back-perf-tests" role="tab" aria-controls="pills-profile" aria-selected="false">Backend Performance</a>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <a class="switch-tabs" id="ui-perf-tests-tab" data-toggle="pill" href="#ui-perf-tests" role="tab" aria-controls="pills-setting" aria-selected="false">UI Performance</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
                 <div class="card-body">
-                    <div class="pl-2">
-                        <h5>Name</h5>
-                        <p class="pl-1">{{engagement.name | safe}}</p>
-                        <h5>Goal</h5>
-                        <p class="pl-1">{{engagement.goal | safe}}</p>
-                        <h5>Status</h5>
-                        <p class="pl-1">{{engagement.status | safe}}</p>
-                        <h5>Start Date</h5>
-                        <p class="pl-1">{{engagement.start_date | safe}}</p>
-                        <h5>End Date</h5>
-                        <p class="pl-1">{{engagement.end_date | safe}}</p>
+                    <div class="tab-content" id="pills-tabContent">
+                        <div class="tab-pane fade show active" id="security-tests" role="tabpanel" aria-labelledby="pills-home-tab">
+                            
+                            <table class="table table-borderless"
+                                id="engagement_security_tests_table"
+                                data-url="{{ url_for('api.v1.security.tests', project_id=tools.session_project.get()) }}"
+                                data-toggle="table"
+                                data-unique-id="id"
+                                data-page-list="[5, 10, 15]"
+                                data-pagination="true"
+                                data-pagination-pre-text="<img src='/design-system/static/assets/ico/arrow_left.svg'>"
+                                data-pagination-next-text="<img src='/design-system/static/assets/ico/arrow_right.svg'>"
+                                data-page-size=5>
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th scope="col" data-checkbox="true"></th>
+                                        <th scope="col" data-sortable="true" data-field="name">Name</th>
+                                        <th scope="col" data-sortable="true" data-field="urls_to_scan"
+                                            data-width="240" data-width-unit="px"
+                                            data-formatter="tableFormatters.application_urls"
+                                        >Urls</th>
+                                        <th scope="col" data-sortable="true" data-field="test_uid" data-visible="false">Uuid</th>
+                                        <th scope="col" data-sortable="true" data-field="integrations"
+                                            data-formatter="tableFormatters.tests_tools"
+                                        >
+                                            Tools
+                                        </th>
+                                        <th scope="col"
+                                            data-align="right"
+                                            data-events="tableFormatters.status_events"
+                                            data-formatter="tableFormatters.tests_actions"
+                                            data-width="100" data-width-unit="px"
+                                        >
+                                            Actions
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="tab-pane fade" id="back-perf-tests" role="tabpanel" aria-labelledby="pills-profile-tab">
+                            <table class="table table-borderless"
+                                id="engagement_backend_perf_tests_table"
+                                data-url="{{ url_for('api.v1.backend_performance.tests', project_id=tools.session_project.get()) }}"
+                                data-toggle="table"
+                                data-unique-id="id"
+                                data-page-list="[5, 10, 15]"
+                                data-pagination="true"
+                                data-pagination-pre-text="<img src='/design-system/static/assets/ico/arrow_left.svg'>"
+                                data-pagination-next-text="<img src='/design-system/static/assets/ico/arrow_right.svg'>"
+                                data-page-size=5>
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th scope="col" data-checkbox="true"></th>
+                                        <th data-visible="false" data-field="id">index</th>
+                                        <th scope="col" data-sortable="true"
+                                            data-cell-style="backend_perf_test_formatters.name_style"
+                                            data-field="name"
+                                        >
+                                            Name
+                                        </th>
+                                        <th scope="col" data-sortable="true"
+                                            data-cell-style="backend_perf_test_formatters.name_style"
+                                            data-field="test_uid">
+                                            UUID
+                                        </th>
+                                        <th scope="col" data-sortable="true"
+                                            data-cell-style="backend_perf_test_formatters.name_style"
+                                            data-field="entrypoint"
+                                        >
+                                            Entrypoint
+                                        </th>
+                                        <th scope="col" data-align="center" data-sortable="true"
+                                            data-formatter=backend_perf_test_formatters.job_type
+                                            data-field="job_type"
+                                        >
+                                            Tool
+                                        </th>
+                                        <th scope="col" data-align="right" 
+                                            data-formatter=backend_perf_test_formatters.actions
+                                            data-events="backend_perf_test_formatters.action_events"
+                                        >
+                                            Actions
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="tab-pane fade" id="ui-perf-tests" role="tabpanel" aria-labelledby="pills-setting-tab">
+
+                            <table class="table table-borderless"
+                                id="engagement_ui_perf_tests_table"
+                                data-url="{{ url_for('api.v1.ui_performance.tests', project_id=tools.session_project.get()) }}"
+                                data-toggle="table"
+                                data-unique-id="id"
+                                data-page-list="[5, 10, 15]"
+                                data-pagination="true"
+                                data-pagination-pre-text="<img src='/design-system/static/assets/ico/arrow_left.svg'>"
+                                data-pagination-next-text="<img src='/design-system/static/assets/ico/arrow_right.svg'>"
+                                data-page-size=5>
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th data-visible="false" data-field="id">index</th>
+                                        <th scope="col" data-sortable="true"
+                                            data-cell-style="ui_test_formatters.name_style"
+                                            data-field="name"
+                                        >
+                                            Name
+                                        </th>
+                                        <th scope="col" data-sortable="true"
+                                            data-cell-style="ui_test_formatters.name_style"
+                                            data-field="test_uid"
+                                        >
+                                            UUID
+                                        </th>
+                                        <th scope="col" data-sortable="true"
+                                            data-cell-style="ui_test_formatters.name_style"
+                                            data-field="entrypoint"
+                                        >
+                                            Entrypoint
+                                        </th>
+                                        <th scope="col" data-align="center" data-sortable="true"
+                                            data-formatter=ui_test_formatters.runner
+                                            data-field="runner"
+                                        >
+                                            Tool
+                                        </th>
+                                        <th scope="col" data-align="right" 
+                                            data-formatter=ui_test_formatters.actions
+                                            data-events="ui_test_formatters.action_events"
+                                            >
+                                            Actions
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
         <div class="flex-item-2">
-            <Table-Card
-                    @register="register"
-                    instance_name="engagement_tests"
-                    header='Application Tests'
-                    :table_attributes="{
-                        'data-url': '{{ url_for('api.v1.security.tests', project_id=tools.session_project.get()) }}',
-                        'data-page-size': 5,
-                        id: 'engagement_tests_table'
-                    }"
-                    container_classes="h-100"
-            >
-                <template #table_headers>
-                    <th scope="col" data-checkbox="true"></th>
-                    <th scope="col" data-sortable="true" data-field="name">Name</th>
-                    <th scope="col" data-sortable="true" data-field="urls_to_scan"
-                        data-width="240" data-width-unit="px"
-                        data-formatter="tableFormatters.application_urls"
-                    >Urls</th>
-                    <th scope="col" data-sortable="true" data-field="test_uid" data-visible="false">Uuid</th>
-                    <th scope="col" data-sortable="true" data-field="integrations"
-                        data-formatter="tableFormatters.tests_tools"
-                    >
-                        Tools
-                    </th>
-                    <th scope="col"
-                        data-align="right"
-                        data-events="tableFormatters.status_events"
-                        data-formatter="tableFormatters.tests_actions"
-                        data-width="100" data-width-unit="px"
-                    >
-                        Actions
-                    </th>
-                </template>
-            </Table-Card>
+            <div class="card card-x h-100">
+                <div class="card-header">
+                    <h2>Test results</h2>
+                </div>
+                <div class="card-body">
+                    <div class="results-card" id="results-security-tests-tab">
+                        <table class="table table-borderless"
+                            id="engagement_security_tests_results_table"
+                            data-toggle="table"
+                            data-unique-id="id"
+                            data-page-list="[5, 10, 15]"
+                            data-pagination="true"
+                            data-pagination-pre-text="<img src='/design-system/static/assets/ico/arrow_left.svg'>"
+                            data-pagination-next-text="<img src='/design-system/static/assets/ico/arrow_right.svg'>"
+                            data-page-size=5
+                            data-url="/api/v1/security/results/{{ tools.session_project.get() }}"
+                            data-query-params="engagementQueryParams"
+                            >
+                            <thead class="thead-light">
+                                <tr>
+                                    <th scope="col" data-sortable="true" data-field="test_name"
+                                        data-formatter="tableFormatters.reports_test_name_button">
+                                        Name
+                                    </th>
+                                    <th scope="col" data-sortable="true" data-field="start_date">Start</th>
+                                    <th scope="col" data-sortable="true" data-field="findings">Findings</th>
+                                    <th scope="col" data-sortable="true" data-field="false_positive">False Positive</th>
+
+                                    <th scope="col" data-field="test_status.status"
+                                        data-formatter="tableFormatters.reports_status_formatter">
+                                        Status
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="results-card" id="results-back-perf-tests-tab" style="display: none;">
+                        <table class="table table-borderless"
+                            id="engagement_back_perf_tests_results_table"
+                            data-toggle="table"
+                            data-unique-id="id"
+                            data-page-list="[5, 10, 15]"
+                            data-pagination="true"
+                            data-pagination-pre-text="<img src='/design-system/static/assets/ico/arrow_left.svg'>"
+                            data-pagination-next-text="<img src='/design-system/static/assets/ico/arrow_right.svg'>"
+                            data-page-size=5
+                            data-url="/api/v1/backend_performance/reports/{{ tools.session_project.get() }}"
+                            data-query-params="engagementQueryParams"
+                            >
+                            <thead class="thead-light">
+                                <tr>
+                                    <th scope="col" data-sortable="true" data-field="name"
+                                    data-formatter=report_formatters.createLinkToTest>Name</th>
+                                    <th scope="col" data-sortable="true" data-field="start_time">Date</th>
+                                    <th scope="col" data-sortable="true" data-field="duration">Duration</th>
+                                    <th scope="col" data-sortable="true" data-field="throughput">TPS</th>
+                                    <th scope="col" data-sortable="true" data-field="failure_rate">Fail Rate</th>
+                                    <th scope="col" data-sortable="true" data-field="test_status"
+                                        data-formatter="report_formatters.reportsStatusFormatter">Status
+                                    </th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="results-card" id="results-ui-perf-tests-tab" style="display: none;">
+                        <table class="table table-borderless"
+                            id="engagement_ui_perf_tests_results_table"
+                            data-toggle="table"
+                            data-unique-id="id"
+                            data-page-list="[5, 10, 15]"
+                            data-pagination="true"
+                            data-pagination-pre-text="<img src='/design-system/static/assets/ico/arrow_left.svg'>"
+                            data-pagination-next-text="<img src='/design-system/static/assets/ico/arrow_right.svg'>"
+                            data-page-size=5
+                            data-url="/api/v1/ui_performance/reports/{{ tools.session_project.get() }}"
+                            data-query-params="engagementQueryParams"
+                            >
+                            <thead class="thead-light">
+                                <tr>
+                                    <th scope="col" data-sortable="true" data-field="name"
+                                        data-formatter=ui_report_formatters.createLinkToTest
+                                    >
+                                        Name
+                                    </th>
+                                    <th scope="col" data-sortable="true" data-field="start_time">Date</th>
+                                    <th scope="col" data-sortable="true" data-field="duration">Duration</th>
+                                    <th scope="col" data-sortable="true" data-field="browser">Browser</th>
+                                    <th scope="col" data-sortable="true" data-field="test_status"
+                                        data-formatter="report_formatters.reportsStatusFormatter"
+                                    >
+                                        Status
+                                    </th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
         </div>
     </div>
-
     <Table-Card
             @register="register"
             instance_name="engagement_issues"
@@ -82,3 +303,7 @@
         </template>
     </Table-Card>
 </div>
+
+
+{% include 'engagements:tests/ui_runtest.html' %}
+{% include 'engagements:tests/back_perf_runtest.html' %}

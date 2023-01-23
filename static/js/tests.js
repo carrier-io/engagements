@@ -1,6 +1,144 @@
+
+function engagementQueryParams(params){
+    const urlSearchParams = new URLSearchParams(window.location.search);
+    const currentParams = Object.fromEntries(urlSearchParams.entries());
+    params['filter'] = JSON.stringify({'engagement': currentParams['hash_id']})
+    return params
+}
+
+
+var ui_report_formatters = {
+    createLinkToTest(value, row, index) {
+        return `<a class="test form-control-label font-h5" href="${ui_perf_results_url}?result_id=${row.id}" role="button">${row.name}</a>`
+    } 
+}
+
+var report_formatters = {
+    reportsStatusFormatter(value, row, index) {
+        switch (value.status.toLowerCase()) {
+            case 'error':
+                return `<div data-toggle="tooltip" data-placement="top" title="${value.description}" style="color: var(--red)"><i class="fas fa-exclamation-circle error"></i> ${value.status}</div>`
+            case 'failed':
+                return `<div data-toggle="tooltip" data-placement="top" title="${value.description}" style="color: var(--red)"><i class="fas fa-exclamation-circle error"></i> ${value.status}</div>`
+            case 'success':
+                return `<div data-toggle="tooltip" data-placement="top" title="${value.description}" style="color: var(--green)"><i class="fas fa-exclamation-circle error"></i> ${value.status}</div>`
+            case 'canceled':
+                return `<div data-toggle="tooltip" data-placement="top" title="${value.description}" style="color: var(--gray)"><i class="fas fa-times-circle"></i> ${value.status}</div>`
+            case 'finished':
+                return `<div data-toggle="tooltip" data-placement="top" title="${value.description}" style="color: var(--info)"><i class="fas fa-check-circle"></i> ${value.status}</div>`
+            case 'in progress':
+                return `<div data-toggle="tooltip" data-placement="top" title="${value.description}" style="color: var(--basic)"><i class="fas fa-spinner fa-spin fa-secondary"></i> ${value.status}</div>`
+            case 'post processing':
+                return `<div data-toggle="tooltip" data-placement="top" title="${value.description}" style="color: var(--basic)"><i class="fas fa-spinner fa-spin fa-secondary"></i> ${value.status}</div>`
+            case 'pending...':
+                return `<div data-toggle="tooltip" data-placement="top" title="${value.description}" style="color: var(--basic)"><i class="fas fa-spinner fa-spin fa-secondary"></i> ${value.status}</div>`
+            case 'preparing...':
+                return `<div data-toggle="tooltip" data-placement="top" title="${value.description}" style="color: var(--basic)"><i class="fas fa-spinner fa-spin fa-secondary"></i> ${value.status}</div>`
+            default:
+                return value.status.toLowerCase()
+        }
+    },
+    createLinkToTest(value, row, index) {
+        return `<a class="test form-control-label font-h5" href="${back_perf_results_url}?result_id=${row.id}" role="button">${row.name}</a>`
+    }
+}
+
+
+
+var ui_test_formatters = {
+    runner(value, row, index) {
+        switch (value) {
+            case 'Sitespeed (browsertime)':
+                return '<img src="/design-system/static/assets/ico/sitespeed.png" width="20">'
+            case 'Lighthouse':
+            case 'Lighthouse-Nodejs':
+                return '<img src="/design-system/static/assets/ico/lighthouse.png" width="20">'
+            case 'Observer':
+                return '<img src="/design-system/static/assets/ico/selenium.png" width="20">'
+            default:
+                return value
+        }
+    },
+    actions(value, row, index) {
+        return `
+            <div class="d-flex justify-content-end">
+                <button class="btn btn-default btn-xs btn-table btn-icon__xs test_run mr-2"
+                    data-toggle="tooltip" data-placement="top" title="Run Test">
+                    <i class="icon__18x18 icon-run"></i>
+                </button>
+            </div>
+        `
+    },
+    name_style(value, row, index) {
+        return {
+            css: {
+                "max-width": "140px",
+                "overflow": "hidden",
+                "text-overflow": "ellipsis",
+                "white-space": "nowrap"
+            }
+        }
+    },
+    action_events: {
+        "click .test_run": function (e, value, row, index) {
+            console.log('test_run', row)
+            const component_proxy = vueVm.registered_components.ui_run_modal
+            component_proxy.set({...row, test_parameters: row.test_parameters})
+        },
+    }
+}
+
+var backend_perf_test_formatters = {
+    job_type(value, row, index) {
+        if (row.job_type === "perfmeter") {
+            return '<img src="/design-system/static/assets/ico/jmeter.png" width="20">'
+        } else if (row.job_type === "perfgun") {
+            return '<img src="/design-system/static/assets/ico/gatling.png" width="20">'
+        } else {
+            return value
+        }
+    },
+
+    actions(value, row, index) {
+        return `
+            <div class="d-flex justify-content-end">
+                <button class="btn btn-default btn-xs btn-table btn-icon__xs test_run mr-2"
+                    data-toggle="tooltip" data-placement="top" title="Run Test">
+                    <i class="icon__18x18 icon-run"></i>
+                </button>
+            </div>
+        `
+    },
+    name_style(value, row, index) {
+        return {
+            css: {
+                "max-width": "140px",
+                "overflow": "hidden",
+                "text-overflow": "ellipsis",
+                "white-space": "nowrap"
+            }
+        }
+    },
+    cell_style(value, row, index) {
+        return {
+            css: {
+                "min-width": "165px"
+            }
+        }
+    },
+    action_events: {
+        "click .test_run": function (e, value, row, index) {
+            // apiActions.run(row.id, row.name)
+            console.log('test_run', row)
+            const component_proxy = vueVm.registered_components.back_run_modal
+            component_proxy.set({...row, test_parameters: row.test_parameters})
+        }
+    }
+}
+
 var tableFormatters = {
     reports_test_name_button(value, row, index) {
-        return `<a href="./results?result_id=${row.id}" role="button">${row.name}</a>`
+        return `<a href="${security_results_url}?result_id=${row.id}" role="button">${row.name}</a>`
     },
     reports_status_formatter(value, row, index) {
         switch (value.toLowerCase()) {
@@ -24,10 +162,17 @@ var tableFormatters = {
     tests_actions(value, row, index) {
         return `
             <div class="d-flex justify-content-end">
-<!--                <button type="button" class="btn btn-24 btn-action" id="test_run"><i class="fas fa-play"></i></button>-->
-                <a href="${security_app_url}&test_uid=${row.test_uid}"  id="test_view"><i class="fa fa-eye"></i></a>
+                <button id="sec_test_run" class="btn btn-default btn-xs btn-table btn-icon__xs test_run mr-2"
+                    data-toggle="tooltip" data-placement="top" title="Run Test">
+                    <i class="icon__18x18 icon-run"></i>
+                </button>
             </div>
         `
+    },
+    status_events: {
+        "click #sec_test_run": function (e, value, row, index) {
+            apiActions.run(row.id, row.name)
+        }
     },
     tests_tools(value, row, index) {
         // todo: fix
@@ -47,24 +192,6 @@ var tableFormatters = {
                     title='${value}'
                 >${value}</div>`
     },
-    status_events: {
-        "click #test_run": function (e, value, row, index) {
-            apiActions.run(row.id, row.name)
-        },
-
-        "click #test_settings": function (e, value, row, index) {
-            securityModal.setData(row)
-            securityModal.container.modal('show')
-            $('#modal_title').text('Edit Application Test')
-            $('#security_test_save').text('Update')
-            $('#security_test_save_and_run').text('Update And Start')
-
-        },
-
-        "click #test_delete": function (e, value, row, index) {
-            apiActions.delete(row.id)
-        }
-    }
 }
 
 var apiActions = {
@@ -127,13 +254,10 @@ var apiActions = {
         alertCreateTest?.clear()
     },
     afterSave: () => {
-        $("#engagement_tests_table").bootstrapTable('refresh')
-        $("#results_table").bootstrapTable('refresh')
         $("#security_test_save").removeClass("disabled updating")
         $("#security_test_save_and_run").removeClass("disabled updating")
+        $('#engagement_security_tests_results_table').bootstrapTable('refresh')
     },
-
-
 }
 
 
@@ -145,4 +269,14 @@ $(document).on('vue_init', () => {
         ids_to_delete && apiActions.delete(ids_to_delete)
     })
     $("#engagement_tests_table").on('all.bs.table', initTooltips)
+    $(".switch-tabs").on('click', function(){
+        activeTabId = `results-${this.id}`
+        toggleTabs('results-card', activeTabId)
+    })
 })
+
+
+function toggleTabs(className, activeTabId){
+    $(`.${className}`).css('display', 'none');
+    $(`#${activeTabId}`).css('display', 'block');
+}

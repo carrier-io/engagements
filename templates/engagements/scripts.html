@@ -6,7 +6,7 @@
 <script>
     view_url = '{{ url_for("theme.route_section_subsection_page", section="orch_tool", subsection="engagements", page="view").rstrip('/') }}';
     kanban_url = '{{ url_for("theme.route_section_subsection", section="orch_tool", subsection="kanban") }}'
-    boards_url = '{{ url_for("api.v1.kanban.boards") }}'
+    boards_url = '{{ url_for("api.v1.kanban.boards", project_id=project_id) }}'
     engagements_url = '{{ url_for("api.v1.engagements.engagements", project_id=project_id) }}'
 </script>
 
