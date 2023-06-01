@@ -12,7 +12,7 @@ from sqlalchemy import (
     Date,
 )
 # from pylon.core.tools import log
-from tools import db_tools, db, rpc_tools, api_tools
+from tools import db_tools, db
 
 
 class ChoiceType(types.TypeDecorator):

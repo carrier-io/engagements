@@ -23,7 +23,7 @@ import flask_restful  # pylint: disable=E0401
 # from pylon.core.tools import log  # pylint: disable=E0611,E0401
 
 from tools import auth  # pylint: disable=E0401
-from ...serializers.main import events_schema, event_schema, event_create_schema
+from ...serializers.main import engagements_schema, engagement_schema, engagement_create_schema
 from ...models.engagement import Engagement
 from marshmallow.exceptions import ValidationError
 
@@ -48,7 +48,7 @@ class API(flask_restful.Resource):  # pylint: disable=R0903
         ):
         if result['ok']:
             field = 'items' if is_list else 'item'
-            schema = events_schema if is_list else event_schema
+            schema = engagements_schema if is_list else engagement_schema
             
             if result.get(field):
                 result[field] = schema.dump(result[field])
@@ -67,7 +67,7 @@ class API(flask_restful.Resource):  # pylint: disable=R0903
     @auth.decorators.check_api(["orchestration_engineer"])
     def post(self, project_id):
         try:
-            payload = event_create_schema.load(flask.request.json)
+            payload = engagement_create_schema.load(flask.request.json)
             payload['project_id'] = project_id
         except ValidationError as e:
             return {"ok": False, "error": str(e)}, 400
@@ -91,7 +91,7 @@ class API(flask_restful.Resource):  # pylint: disable=R0903
     @auth.decorators.check_api(["orchestration_engineer"])
     def put(self, project_id: int, hash_id: str):
         try:
-            payload = event_schema.load(flask.request.json, partial=True)
+            payload = engagement_schema.load(flask.request.json, partial=True)
         except ValidationError as e:
             return {"ok": False, "error": str(e)}, 400
         

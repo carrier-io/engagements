@@ -20,12 +20,12 @@ from typing import Union, Dict
 import flask  # pylint: disable=E0401
 import flask_restful  # pylint: disable=E0401
 
-from pylon.core.tools import log  # pylint: disable=E0611,E0401
+# from pylon.core.tools import log  # pylint: disable=E0611,E0401
 
 from tools import auth  # pylint: disable=E0401
-from ...serializers.main import events_schema, event_schema, event_create_schema
+from ...serializers.main import engagements_schema, engagement_schema
 from ...models.engagement import Engagement
-from marshmallow.exceptions import ValidationError
+from pylon.core.tools import log
 
 
 class API(flask_restful.Resource):  # pylint: disable=R0903
@@ -39,7 +39,6 @@ class API(flask_restful.Resource):  # pylint: disable=R0903
         self.module = module
         self.rpc = module.context.rpc_manager.call
 
-
     def _return_response(self, 
             result: Dict[str, Union[str, Engagement]], *,
             is_list=False,
@@ -47,7 +46,7 @@ class API(flask_restful.Resource):  # pylint: disable=R0903
         ):
         if result['ok']:
             field = 'items' if is_list else 'item'
-            schema = events_schema if is_list else event_schema
+            schema = engagements_schema if is_list else engagement_schema
             
             if result.get(field):
                 result[field] = schema.dump(result[field])
@@ -58,7 +57,6 @@ class API(flask_restful.Resource):  # pylint: disable=R0903
             return result, 200
         
         return result, 404
-
 
     @auth.decorators.check_api(["orchestration_engineer"])
     def post(self, engagement_id):
@@ -71,7 +69,6 @@ class API(flask_restful.Resource):  # pylint: disable=R0903
         # preparing response
         return self._return_response(result)
     
-
     @auth.decorators.check_api(["orchestration_engineer"])
     def get(self, engagement_id):
         # bussiness logic

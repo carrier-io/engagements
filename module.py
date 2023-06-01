@@ -37,17 +37,18 @@ class Module(module.ModuleModel):
         self.descriptor.init_all()
 
         theme.register_subsection(
-            "orch_tool",
-            "engagements", "Engagements",
+            "engagements",
+            "engagements", "Overview",
             title="Engagements",
             kind="slot",
             prefix="engagements_table_slot_",
             icon_class="fas fa-server fa-fw",
+            weight=6,
             # permissions=["orchestration_engineer"],
         )
 
         theme.register_page(
-            "orch_tool",
+            "engagements",
             "engagements", "view",
             title="Engagement View",
             kind="slot",

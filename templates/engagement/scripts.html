@@ -7,6 +7,7 @@
 
 
 <script>
+    overview_url = "{{url_for('api.v1.issues.overview', project_id=project_id)}}";
     security_app_url = "{{ url_for('theme.route_section_subsection', section='security', subsection='app').rstrip() }}?engagement={{ engagement.hash_id }}"
     security_results_url = "{{ url_for('theme.route_section_subsection_page', section='security', subsection='app', page='results').rstrip() }}"
     backend_perf_url = "{{ url_for('theme.route_section_subsection', section='performance', subsection='backend').rstrip() }}?engagement={{ engagement.hash_id }}"
