@@ -41,10 +41,16 @@ class Module(module.ModuleModel):
             "engagements", "Overview",
             title="Engagements",
             kind="slot",
+            permissions={
+                "permissions": ["engagements.engagements"],
+                "recommended_roles": {
+                    "administration": {"admin": True, "viewer": True, "editor": True},
+                    "default": {"admin": True, "viewer": True, "editor": True},
+                    "developer": {"admin": True, "viewer": True, "editor": True},
+            }},
             prefix="engagements_table_slot_",
             icon_class="fas fa-server fa-fw",
             weight=6,
-            # permissions=["orchestration_engineer"],
         )
 
         theme.register_page(
@@ -53,7 +59,6 @@ class Module(module.ModuleModel):
             title="Engagement View",
             kind="slot",
             prefix="engagement_view_slot_",
-            # permissions=["orchestration_engineer"],
         )
 
     def deinit(self):  # pylint: disable=R0201

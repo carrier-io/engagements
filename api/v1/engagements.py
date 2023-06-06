@@ -62,9 +62,15 @@ class API(flask_restful.Resource):  # pylint: disable=R0903
             return result, 404
         
         return result, 400
+    
 
-
-    @auth.decorators.check_api(["orchestration_engineer"])
+    @auth.decorators.check_api({
+        "permissions": ["engagements.engagements.engagements.create"],
+        "recommended_roles": {
+            "administration": {"admin": True, "viewer": True, "editor": True},
+            "default": {"admin": True, "viewer": True, "editor": True},
+            "developer": {"admin": True, "viewer": True, "editor": True},
+        }})
     def post(self, project_id):
         try:
             payload = engagement_create_schema.load(flask.request.json)
@@ -79,7 +85,14 @@ class API(flask_restful.Resource):  # pylint: disable=R0903
         return self._return_response(result)
 
 
-    @auth.decorators.check_api(["orchestration_engineer"])
+
+    @auth.decorators.check_api({
+        "permissions": ["engagements.engagements.engagements.view"],
+        "recommended_roles": {
+            "administration": {"admin": True, "viewer": True, "editor": True},
+            "default": {"admin": True, "viewer": True, "editor": True},
+            "developer": {"admin": True, "viewer": True, "editor": True},
+        }})
     def get(self, project_id):
         # bussiness logic
         result = self.module.list_engagements(project_id)
@@ -88,7 +101,13 @@ class API(flask_restful.Resource):  # pylint: disable=R0903
         return self._return_response(result, is_list=True)
     
 
-    @auth.decorators.check_api(["orchestration_engineer"])
+    @auth.decorators.check_api({
+        "permissions": ["engagements.engagements.engagements.edit"],
+        "recommended_roles": {
+            "administration": {"admin": True, "viewer": True, "editor": True},
+            "default": {"admin": True, "viewer": True, "editor": True},
+            "developer": {"admin": True, "viewer": True, "editor": True},
+    }})
     def put(self, project_id: int, hash_id: str):
         try:
             payload = engagement_schema.load(flask.request.json, partial=True)
@@ -102,7 +121,13 @@ class API(flask_restful.Resource):  # pylint: disable=R0903
         return self._return_response(result)
 
 
-    @auth.decorators.check_api(["orchestration_engineer"])
+    @auth.decorators.check_api({
+        "permissions": ["engagements.engagements.engagements.delete"],
+        "recommended_roles": {
+            "administration": {"admin": True, "viewer": True, "editor": True},
+            "default": {"admin": True, "viewer": True, "editor": True},
+            "developer": {"admin": True, "viewer": True, "editor": True},
+    }})
     def delete(self, project_id: int, hash_id: str):
         # bussiness logic
         result = self.module.delete_engagement(project_id, hash_id)
