@@ -37,22 +37,28 @@ class Module(module.ModuleModel):
         self.descriptor.init_all()
 
         theme.register_subsection(
-            "orch_tool",
-            "engagements", "Engagements",
+            "engagements",
+            "engagements", "Overview",
             title="Engagements",
             kind="slot",
+            permissions={
+                "permissions": ["engagements.engagements"],
+                "recommended_roles": {
+                    "administration": {"admin": True, "viewer": True, "editor": True},
+                    "default": {"admin": True, "viewer": True, "editor": True},
+                    "developer": {"admin": True, "viewer": True, "editor": True},
+            }},
             prefix="engagements_table_slot_",
             icon_class="fas fa-server fa-fw",
-            # permissions=["orchestration_engineer"],
+            weight=6,
         )
 
         theme.register_page(
-            "orch_tool",
+            "engagements",
             "engagements", "view",
             title="Engagement View",
             kind="slot",
             prefix="engagement_view_slot_",
-            # permissions=["orchestration_engineer"],
         )
 
     def deinit(self):  # pylint: disable=R0201

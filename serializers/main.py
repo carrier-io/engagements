@@ -17,6 +17,6 @@ class EngagementDetailSchema(SQLAlchemyAutoSchema):
         model = Engagement
 
 
-event_schema = EngagementDetailSchema()
-event_create_schema = EngagementSchema()
-events_schema = EngagementSchema(many=True)
+engagement_schema = EngagementDetailSchema()
+engagement_create_schema = EngagementSchema()
+engagements_schema = EngagementSchema(many=True)

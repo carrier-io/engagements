@@ -23,7 +23,7 @@ import flask_restful  # pylint: disable=E0401
 # from pylon.core.tools import log  # pylint: disable=E0611,E0401
 
 from tools import auth  # pylint: disable=E0401
-from ...serializers.main import events_schema, event_schema, event_create_schema
+from ...serializers.main import engagements_schema, engagement_schema, engagement_create_schema
 from ...models.engagement import Engagement
 from marshmallow.exceptions import ValidationError
 
@@ -48,7 +48,7 @@ class API(flask_restful.Resource):  # pylint: disable=R0903
         ):
         if result['ok']:
             field = 'items' if is_list else 'item'
-            schema = events_schema if is_list else event_schema
+            schema = engagements_schema if is_list else engagement_schema
             
             if result.get(field):
                 result[field] = schema.dump(result[field])
@@ -62,12 +62,18 @@ class API(flask_restful.Resource):  # pylint: disable=R0903
             return result, 404
         
         return result, 400
+    
 
-
-    @auth.decorators.check_api(["orchestration_engineer"])
+    @auth.decorators.check_api({
+        "permissions": ["engagements.engagements.engagements.create"],
+        "recommended_roles": {
+            "administration": {"admin": True, "viewer": True, "editor": True},
+            "default": {"admin": True, "viewer": True, "editor": True},
+            "developer": {"admin": True, "viewer": True, "editor": True},
+        }})
     def post(self, project_id):
         try:
-            payload = event_create_schema.load(flask.request.json)
+            payload = engagement_create_schema.load(flask.request.json)
             payload['project_id'] = project_id
         except ValidationError as e:
             return {"ok": False, "error": str(e)}, 400
@@ -79,7 +85,14 @@ class API(flask_restful.Resource):  # pylint: disable=R0903
         return self._return_response(result)
 
 
-    @auth.decorators.check_api(["orchestration_engineer"])
+
+    @auth.decorators.check_api({
+        "permissions": ["engagements.engagements.engagements.view"],
+        "recommended_roles": {
+            "administration": {"admin": True, "viewer": True, "editor": True},
+            "default": {"admin": True, "viewer": True, "editor": True},
+            "developer": {"admin": True, "viewer": True, "editor": True},
+        }})
     def get(self, project_id):
         # bussiness logic
         result = self.module.list_engagements(project_id)
@@ -88,10 +101,16 @@ class API(flask_restful.Resource):  # pylint: disable=R0903
         return self._return_response(result, is_list=True)
     
 
-    @auth.decorators.check_api(["orchestration_engineer"])
+    @auth.decorators.check_api({
+        "permissions": ["engagements.engagements.engagements.edit"],
+        "recommended_roles": {
+            "administration": {"admin": True, "viewer": True, "editor": True},
+            "default": {"admin": True, "viewer": True, "editor": True},
+            "developer": {"admin": True, "viewer": True, "editor": True},
+    }})
     def put(self, project_id: int, hash_id: str):
         try:
-            payload = event_schema.load(flask.request.json, partial=True)
+            payload = engagement_schema.load(flask.request.json, partial=True)
         except ValidationError as e:
             return {"ok": False, "error": str(e)}, 400
         
@@ -102,7 +121,13 @@ class API(flask_restful.Resource):  # pylint: disable=R0903
         return self._return_response(result)
 
 
-    @auth.decorators.check_api(["orchestration_engineer"])
+    @auth.decorators.check_api({
+        "permissions": ["engagements.engagements.engagements.delete"],
+        "recommended_roles": {
+            "administration": {"admin": True, "viewer": True, "editor": True},
+            "default": {"admin": True, "viewer": True, "editor": True},
+            "developer": {"admin": True, "viewer": True, "editor": True},
+    }})
     def delete(self, project_id: int, hash_id: str):
         # bussiness logic
         result = self.module.delete_engagement(project_id, hash_id)

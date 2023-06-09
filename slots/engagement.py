@@ -44,7 +44,13 @@ class Slot:  # pylint: disable=E1101,R0903
 
 
     @web.slot("engagement_view_slot_content")
-    @auth.decorators.check_slot(["orchestration_engineer"], access_denied_reply=theme.access_denied_part)
+    @auth.decorators.check_api({
+        "permissions": ["engagements.engagements"],
+        "recommended_roles": {
+            "administration": {"admin": True, "viewer": True, "editor": True},
+            "default": {"admin": True, "viewer": True, "editor": True},
+            "developer": {"admin": True, "viewer": True, "editor": True},
+    }})
     def _content(self, context, slot, payload):
         _ = slot
         #
@@ -60,7 +66,6 @@ class Slot:  # pylint: disable=E1101,R0903
             )
 
     @web.slot("engagement_view_slot_styles")
-    @auth.decorators.check_slot(["orchestration_engineer"])
     def _styles(self, context, slot, payload):
         _ = slot
         #
@@ -70,7 +75,6 @@ class Slot:  # pylint: disable=E1101,R0903
             )
 
     @web.slot("engagement_view_slot_scripts")
-    @auth.decorators.check_slot(["orchestration_engineer"])
     def _scripts(self, context, slot, payload):
         _ = slot
         #

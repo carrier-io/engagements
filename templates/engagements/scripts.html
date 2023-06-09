@@ -7,10 +7,14 @@
     view_url = '{{ url_for("theme.route_section_subsection_page", section="orch_tool", subsection="engagements", page="view").rstrip('/') }}';
     kanban_url = '{{ url_for("theme.route_section_subsection", section="orch_tool", subsection="kanban") }}'
     boards_url = '{{ url_for("api.v1.kanban.boards", project_id=project_id) }}'
+    overview_url = "{{url_for('api.v1.issues.overview', project_id=project_id)}}";
+    engagements_list = "{{ url_for('api.v1.engagements.engagements', project_id=project_id) }}"
     engagements_url = '{{ url_for("api.v1.engagements.engagements", project_id=project_id) }}'
 </script>
 
-<script src="{{ url_for('engagements.static', filename='js/engagements.js') }}"></script>
 
+<script src="{{ url_for('engagements.static', filename='js/filterToolbarComponent.js') }}"></script>
+<script src="{{ url_for('engagements.static', filename='js/EngagementWrapper.js') }}"></script>
+<script src="{{ url_for('engagements.static', filename='js/engagements.js') }}"></script>
 
 

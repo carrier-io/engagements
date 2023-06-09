@@ -18,7 +18,7 @@
 """ RPC """
 # from pylon.core.tools import log  # pylint: disable=E0611,E0401
 from pylon.core.tools import web  # pylint: disable=E0611,E0401
-from tools import rpc_tools   # pylint: disable=E0401
+from tools import rpc_tools, db   # pylint: disable=E0401
 from ..models.engagement import Engagement
 
 
@@ -79,6 +79,15 @@ class RPC:  # pylint: disable=E1101,R0903
     def _get_boards_hash_ids(self, hash_id):
         obj = Engagement.query.filter_by(hash_id=hash_id).first()
         return obj.kanban_boards if obj else []
+
+
+    @web.rpc("engagement_get_engagement_names", 'get_engagement_names')
+    @rpc_tools.wrap_exceptions(RuntimeError)
+    def _get_engagement_names(self, hash_ids):
+        query = db.session.query(Engagement.hash_id, Engagement.name)\
+            .filter(Engagement.hash_id.in_(hash_ids))
+        names = query.all()
+        return dict(names)
 
 
 
