@@ -1,44 +1,14 @@
 var currentEngagementId = null;
-var boardsList = [];
-
-function getSelectedBoardsList(multiselect){
-  let selectedItems = multiselect.selectedItems
-  let list = []
-  selectedItems.forEach(item => list.push(item['id']))
-  return list
-}
-
-async function getBoardsList(){
-  try {
-    const response = await axios.get(boards_url)
-    items = response.data['items']
-    items.forEach(item => {
-      boardsList.push({
-        'id': item['hash_id'],
-        'title': item['name']
-      })
-    })
-
-  } catch(err) {
-    console.log(err)
-  }
-}
 
 $(document).on('vue_init', async () => {
   createModal = $("#create_modal")
 
-  await getBoardsList()
-
   createModal.on("show.bs.modal", function () {
     $("#form-create").get(0).reset();
-    multiselect = vueVm.registered_components.kanban_boards_select
-    multiselect.selectedItems = []
-    multiselect.itemsList = boardsList
   });
 
   $("#save").click(function() {
       data = $("#form-create").serializeObject();
-      data['kanban_boards'] = getSelectedBoardsList(vueVm.kanban_boards_select)
       axios.post(engagements_url, data)
           .then(resp => {
               $("#table").bootstrapTable("refresh", {});
@@ -52,7 +22,6 @@ $(document).on('vue_init', async () => {
 
   $("#edit").click(function(){
       data = $("#form-edit").serializeObject()
-      data['kanban_boards'] = getSelectedBoardsList(vueVm.edit_boards_select)
       axios.put(engagements_url+'/'+ currentEngagementId, data)
           .then(resp => {
               $("#table").bootstrapTable("refresh", {});
@@ -83,6 +52,13 @@ function actionsFormatter(value, row, index) {
 }
 
 
+function goalFormatter(value, row, index){
+  if (value.length > 350){
+    return value.slice(0, 350) + '...'
+  }
+  return value
+}
+
 window.actionsEvents = {
     "click .edit-event": function (e, value, row, index) {
         $("#edit_modal").modal("show");
@@ -90,10 +66,6 @@ window.actionsEvents = {
         $.each($("form#form-edit .form-control"), (ind, tag)  => {
             tag.value = row[tag.name]
         })
-        multiselect = vueVm.registered_components.edit_boards_select
-        items = boardsList.filter(board => row.kanban_boards.includes(board['id']))
-        multiselect.selectedItems = items
-        multiselect.itemsList = boardsList
     },
 
     "click .delete-event": function (e, value, row, index) {
@@ -113,9 +85,16 @@ window.actionsEvents = {
   
 
 const EngagementsTable = {
-  props: ['engagement', 'engagementsList'],
+  props: ['engagement'],
   components: {
       'filter-toolbar-container': FilterToolbarContainer,
+  },
+  watch: {
+    engagement(value){
+        if (value.id == -1){
+          this.refreshTable(this.engagements_url)
+        }
+    }
   },
   data() {
       return {
@@ -127,17 +106,8 @@ const EngagementsTable = {
       }
   },
   mounted(){
-      this.setTableCheckEvents()
-  },  
-  watch: {
-      engagement(value){
-          notAllEngagements = value.id!=-1
-          if (notAllEngagements){
-              this.preFilterMap['engagement'] = value.hash_id
-          } else {
-              delete this.preFilterMap['engagement']
-          }
-      },
+    $(this.table_id).bootstrapTable("load");
+    this.setTableCheckEvents()
   },
   methods: {
       // Table events
@@ -158,6 +128,10 @@ const EngagementsTable = {
           $(this.table_id).on('uncheck-all.bs.table', ()=>{
               this.noTicketSelected = true
           })
+
+          document.addEventListener('newEngagement', ()=>{
+            this.refreshTable(this.engagements_url)
+          });
       },
       // Table methods
       refreshTable(queryUrl, reload=true){
@@ -244,7 +218,7 @@ const EngagementsTable = {
             <tr>
                 <th scope="col" data-checkbox="true"></th>
                 <th data-field="name">Name</th>
-                <th data-field="goal">Goal</th>
+                <th data-field="goal" data-width="30" data-width-unit="%" data-formatter="goalFormatter">Goal</th>
                 <th data-field="start_date">Start Date</th>
                 <th data-field="end_date">End Date</th>
                 <th data-field="status">Status</th>
@@ -256,5 +230,3 @@ const EngagementsTable = {
     </div>
   `
 }
-
-register_component('engagements-table', EngagementsTable);

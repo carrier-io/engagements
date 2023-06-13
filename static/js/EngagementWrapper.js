@@ -13,13 +13,23 @@ const EngagementCreationModal = {
         });
     },
     methods: {
+        fireEvent(payload){
+            // Create a new custom event
+            const customEvent = new CustomEvent('newEngagement', {
+                detail: payload,
+            });
+            
+            // Dispatch the custom event
+            document.dispatchEvent(customEvent);
+        },
         save() {
             data = $(this.formId).serializeObject();
-            axios.post(engagements_list, data)
+            axios.post(engagements_url, data)
                 .then(() => {
                     this.$emit('added')
                     $(this.modalId).modal("hide");
                     showNotify("SUCCESS", 'Successfully created')
+                    this.fireEvent(data)
                 })
                 .catch(err => {
                     console.log(err)
@@ -90,14 +100,66 @@ const EngagementCreationModal = {
     `
 }
 
+function getHealth(value){
+    healthOpts = {
+        'good': '#139A41',
+        'warning': '#E97912',
+        'bad': '#D71616',
+        'not_defined': '#CAD1D7',
+        'dead': '#32325D',
+    }
+    healthStatus = healthOpts[value]
+    return healthStatus || '#CAD1D7'
+}
+
 const TopEngagementCard = {
     props: ["engagement"],
     data() {
-        return {}
+        return {
+            healthOpts: [
+                {
+                    title: 'Good',
+                    value: 'good',
+                    color: '#139A41'
+                },
+                {
+                    title: 'Warning',
+                    value: 'warning',
+                    color: '#E97912'
+                },
+                {
+                    title: 'Bad',
+                    value: 'bad',
+                    color: '#D71616'
+                },
+                {
+                    title: 'Not defined',
+                    value: 'not_defined',
+                    color: '#CAD1D7'
+                },
+                {
+                    title: 'Dead',
+                    value: 'dead',
+                    color: '#32325D'
+                },
+            ],
+        }
     },
     methods: {
         stringifyDate(date){
             return date
+        },
+
+        getHealth(value){
+            healthStatus = this.healthOpts.find(option => option.value==value)
+            if (!healthStatus){
+                return {
+                    title: 'Not defined',
+                    value: 'not_defined',
+                    color: '#CAD1D7'
+                }
+            }
+            return healthStatus
         },
 
     },
@@ -112,8 +174,8 @@ const TopEngagementCard = {
             </div>
             <div class="d-flex align-items-center">
                 <div class="d-flex align-items-end mr-2">
-                    <i class="icon__16x16 icon-circle-green__16"></i> 
-                    <div class="d-inline-block">Green</div>
+                    <i class="icon__16x16 icon-circle-green__16" :style="'background:' + getHealth(engagement.health).color"></i> 
+                    <div class="d-inline-block">{{getHealth(engagement.health).title}}</div>
                 </div>
                 <div class="d-flex align-items-center">
                     <i class="icon__18x18 icon-date-picker mr-1"></i>
@@ -131,6 +193,11 @@ register_component('engagement-card', TopEngagementCard);
 
 
 const EngagementsListAside = {
+    props: {
+        updatedEngagement:{
+            default: null,
+        }
+    },
     emits: ['engagementSelected', 'engagementsListUpdated'],
     data() {
         return {
@@ -146,6 +213,11 @@ const EngagementsListAside = {
         this.fetchEngagements().then(data => {
             this.setStateAndEvents(data)
         })
+    },
+    watch: {
+        updatedEngagement(value){
+            this.refreshEngagements()
+        }
     },
     components: {
         'engagement-creation-modal': EngagementCreationModal,
@@ -267,7 +339,7 @@ function nameFormatter(value, row){
         return value
     }
     txt = `<div class="pl-2 d-flex align-items-end">
-                <i class="icon__16x16 icon-circle-green__16"></i>
+            <i class="icon__16x16 icon-circle-green__16" style="background: ${getHealth(row.health)}"></i>
                 ${value}
             </div>`
     return txt
@@ -390,12 +462,22 @@ const EngagementContainer = {
                 id: -1,
                 name: ''
             },
+            updatedEngagement: null,
         }
     },
+    mounted(){
+        document.addEventListener('updateEngagement', this.handleEngagementEvent);
+    },
     methods: {
+        handleEngagementEvent(event){
+            const data = event.detail;
+            this.updatedEngagement = data
+        },
+
         updateEngagements(engagements){
             this.engagements = engagements
         },
+
         setSelectedEngagement(engagement){
             this.selectedEngagement = engagement
         }
@@ -403,6 +485,7 @@ const EngagementContainer = {
     template: ` 
         <main class="d-flex align-items-start justify-content-center mb-3">
             <engagement-aside
+                :updatedEngagement="updatedEngagement"
                 @engagementsListUpdated="updateEngagements"
                 @engagementSelected="setSelectedEngagement"
             >
