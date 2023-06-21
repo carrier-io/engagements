@@ -384,8 +384,6 @@ const CustomField = {
             delete this.editingFields[fieldId]
             this.$emit('updated', payload)
         },
-
-
     },
     template:`
         <div id="extra-field-modal" class="modal" tabindex="-1">

@@ -1,0 +1,105 @@
+.top-eng-card-container{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px 20px 12px 24px;
+    gap: 4px;
+}
+
+.top-eng-card-container .header{
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 0px;
+    gap: 16px;
+    align-self: stretch;
+}
+
+.top-eng-card-container .top-description-container{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0px;
+    gap: 16px;
+    align-self: stretch;
+}
+
+.top-description-container .top-description{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0px;
+    gap: 8px;
+}
+
+.health-description{
+    display: flex;
+    flex-direction: row;
+    align-items: end;
+    padding: 0px;
+    gap: 4px;
+}
+
+.desc-font{
+    font-family: 'Source Sans Pro';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 24px;
+    color: var(--gray800)
+}
+
+.eng-goal{
+    font-family: "Source Sans Pro";
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--gray700);
+}
+
+.gray-bg{
+    background: var(--gray300);
+}
+
+.top-row-label {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.label {
+    font-size: 12px;
+    font-family: 'Source Sans Pro';
+    font-style: normal;
+    font-weight: 600;
+    line-height: 16px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: #ABB3B9;
+}
+
+.desc-row{
+    display: grid;
+    grid-template-columns: 1fr 12fr;
+    grid-column-gap: 16px;
+    padding: 0px;
+    align-self: stretch;
+}
+
+.top-row-value{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    word-break: break-word;
+}
+
+.value{
+    font-family: 'Source Sans Pro';
+    font-style: normal;
+    font-size: 14px;
+    line-height: 24px;
+    font-weight: 400;
+    color: #32325D;
+}
