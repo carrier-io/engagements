@@ -1,5 +1,16 @@
 var currentEngagementId = null;
 
+function fireEvent(eventName, payload){
+  // Create a new custom event
+  const customEvent = new CustomEvent(eventName, {
+      detail: payload,
+  });
+  
+  // Dispatch the custom event
+  document.dispatchEvent(customEvent);
+}
+
+
 $(document).on('vue_init', async () => {
   createModal = $("#create_modal")
 
@@ -11,7 +22,7 @@ $(document).on('vue_init', async () => {
       data = $("#form-create").serializeObject();
       axios.post(engagements_url, data)
           .then(resp => {
-              $("#table").bootstrapTable("refresh", {});
+              $("#engagements-table").bootstrapTable("refresh", {});
               createModal.modal("hide");
               showNotify("SUCCESS", 'Successfully created')
           })
@@ -24,9 +35,10 @@ $(document).on('vue_init', async () => {
       data = $("#form-edit").serializeObject()
       axios.put(engagements_url+'/'+ currentEngagementId, data)
           .then(resp => {
-              $("#table").bootstrapTable("refresh", {});
+              $("#engagements-table").bootstrapTable("refresh");
               $("#edit_modal").modal("hide")
               showNotify("SUCCESS", 'Successfully updated')
+              fireEvent('updateEngagement', data);
           })
           .catch(err => {
               console.log(err)
@@ -34,11 +46,10 @@ $(document).on('vue_init', async () => {
   });
 
   $('#refreshTable').click(function() {
-    $('#table').bootstrapTable('refresh');
+    $('#engagements-table').bootstrapTable('refresh');
   });
 
 });
-
 
 function actionsFormatter(value, row, index) {
     return [
@@ -63,19 +74,32 @@ window.actionsEvents = {
     "click .edit-event": function (e, value, row, index) {
         $("#edit_modal").modal("show");
         currentEngagementId = row.hash_id
-        $.each($("form#form-edit .form-control"), (ind, tag)  => {
+        $('form#form-edit .selectpicker').selectpicker('val', row['status'])
+        $.each($("form#form-edit .field"), (ind, tag)  => {
             tag.value = row[tag.name]
         })
+        $('form#form-edit #text-goal').summernote({
+          height: 150,
+          focus: true,
+          toolbar: [
+              ['style', ['bold', 'italic', 'underline', 'clear']],
+              ['color', ['color']],
+              ['fontname', ['fontname']],
+              ['para', ['ul', 'ol', 'paragraph']],
+            ]
+        });
+        $('form#form-edit #text-goal').summernote('code', row['goal'])
     },
 
     "click .delete-event": function (e, value, row, index) {
       axios.delete(engagements_url + "/" + row.hash_id)
         .then(function (response) {
-          $("#table").bootstrapTable("remove", {
+          $("#engagements-table").bootstrapTable("remove", {
             field: "id",
             values: [row.id]
           });
           showNotify("SUCCESS", 'Successfully deleted')
+          fireEvent('deleteEngagement', row.hash_id)
         })
         .catch(function (error) {
           console.log(error);

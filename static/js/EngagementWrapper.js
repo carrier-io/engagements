@@ -10,7 +10,22 @@ const EngagementCreationModal = {
     mounted(){
         $(this.modalId).on("show.bs.modal", () => {
             $(this.formId).get(0).reset();
+
+            $('form#eng-form-create #text-goal').summernote({
+                height: 150,
+                focus: true,
+                toolbar: [
+                    ['style', ['bold', 'italic', 'underline', 'clear']],
+                    ['color', ['color']],
+                    ['fontname', ['fontname']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                  ]
+            });
         });
+
+        $(this.modalId).on('hidden.bs.modal', ()=>{
+            $('form#eng-form-create #text-goal').summernote("reset");
+        })
     },
     methods: {
         fireEvent(payload){
@@ -288,6 +303,7 @@ const TopEngagementCard = {
             ],
 
             selected_fields: [],
+            pre_selected_fields: ['dates', 'health', 'status']
         }
     },
     components: {
@@ -302,7 +318,6 @@ const TopEngagementCard = {
             return result
         }
     },
-
     methods: {
         isSelectedField(field){
             return this.selected_fields.includes(field)
@@ -334,8 +349,8 @@ const TopEngagementCard = {
 
     },
     template: `
-    <div class="card mt-3 p-2">
-        <div class="card-header top-eng-card-container">
+    <div class="card mt-3 eng-header-element">
+        <div class="top-eng-card-container">
         
             <div class="header">
                 <p class="font-h4 font-bold">{{engagement.name}}</p>
@@ -344,6 +359,7 @@ const TopEngagementCard = {
                     variant="slot"
                     button_class="btn btn-default btn-xs btn-table btn-icon__xs"
                     :list_items="all_fields"
+                    :pre_selected_indexes="pre_selected_fields"
                     v-model="selected_fields"
                 >
                     <template #dropdown_button>
@@ -353,8 +369,7 @@ const TopEngagementCard = {
             
             </div>
 
-            <div class="eng-goal" v-show="isSelectedField('goal')">
-                {{engagement.goal}}
+            <div class="eng-goal" v-show="isSelectedField('goal')" v-html="engagement.goal">
             </div>
 
             <div class="top-description-container">
@@ -421,7 +436,8 @@ const EngagementsListAside = {
     mounted() {
         this.fetchEngagements().then(data => {
             this.setStateAndEvents(data)
-        })
+        });
+        document.addEventListener('deleteEngagement', this.handleDelete)
     },
     watch: {
         updatedEngagement(value){
@@ -433,10 +449,15 @@ const EngagementsListAside = {
     },
     computed: {
         responsiveTableHeight() {
-            return `${(window.innerHeight - 235)}px`;
+            return `${(window.innerHeight - 215)}px`;
         }
     },
     methods: {
+        handleDelete(e){
+            index  = this.selectedEngagementRowIndex - 1;
+            this.selectEngagement(index);
+            this.refreshEngagements();
+        },
         async fetchEngagements() {
             const res = await fetch (`/api/v1/engagements/engagements/${getSelectedProjectId()}`,{
                 method: 'GET',
@@ -482,7 +503,7 @@ const EngagementsListAside = {
             this.SET_ENGAGEMENTS(engagements)
             this.setEvent(engagements)
             this.engagementCount = data['total'];
-            if (data['total'] > index) {
+            if (data['total'] >= index) {
                 this.selectEngagement(index);
             }
         },
@@ -699,19 +720,20 @@ const EngagementContainer = {
                 @engagementSelected="setSelectedEngagement"
             >
             </engagement-aside>
-            <div class="w-100 mr-3">
-                <div v-if="selectedEngagement.id!=-1">
-                    <slot name="in_engagement_navbar" :master="this">
-                    </slot>
+            <div class="w-100 mr-3" id="eng-container-body">
+                <div class="top-eng-container">
+                    <div v-if="selectedEngagement.id!=-1">
+                        <slot name="in_engagement_navbar" :master="this">
+                        </slot>
+                    </div>
+                    <div v-else>
+                        <slot name="general_navbar" :master="this">
+                        </slot>
+                    </div>
                 </div>
-                <div v-else>
-                    <slot name="general_navbar" :master="this">
-                    </slot>
-                </div>
-                <div>
-                    <slot name="content" :master="this">
-                    </slot>
-                </div>
+                
+                <slot name="content" :master="this">
+                </slot>  
             </div>
         </main>
     `

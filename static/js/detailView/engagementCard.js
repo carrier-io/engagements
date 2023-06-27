@@ -1,15 +1,15 @@
 const EngagementCardContainer = {
     props: ["engagement"],
-    emits: ['updated'],
+    emits: ['updated',],
     components: {
         'header-container': EngagementHeaderContainer,
         'description-container': EngagementDetailContainer,
         'attachments-container': EngagementAttachmentsContainer,
     },
     methods: {
-        fireEvent(payload){
+        fireEvent(eventName, payload){
             // Create a new custom event
-            const customEvent = new CustomEvent('updateEngagement', {
+            const customEvent = new CustomEvent(eventName, {
                 detail: payload,
             });
             
@@ -20,8 +20,13 @@ const EngagementCardContainer = {
         propagateEvent(data){
             newEngagement = {...this.engagement}
             Object.assign(newEngagement, data)
-            this.fireEvent(newEngagement)
+            this.fireEvent('updateEngagement', data)
         },
+
+        handleDeleteEvent(data){
+            this.fireEvent('deleteEngagement', data)
+        },
+
         close(){
             this.$emit('updated', null)
         },
@@ -34,6 +39,7 @@ const EngagementCardContainer = {
                     <header-container
                         :engagement="engagement"
                         @updated="propagateEvent"
+                        @deleted="handleDeleteEvent"
                         @close="close"
                     ></header-container>
 

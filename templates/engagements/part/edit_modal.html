@@ -17,15 +17,14 @@
             <div class="modal-body">
                 <form id="form-edit">
                     <div class="section p-1">
-
                         <div class="custom-input mb-3">
                             <label for="input-name" class="font-weight-bold mb-1">Engagement Name</label>
-                            <input type="text" name="name" id="input-name">
+                            <input type="text" class="field" name="name" id="input-name" class="field">
                         </div>
     
                         <div class="custom-input mb-3">
                             <label for="text-goal" class="font-weight-bold mb-1">Goal</label>
-                            <textarea class="form-control" name="goal" rows="8" id="text-goal"></textarea>
+                            <textarea class="form-control field" name="goal" rows="8" id="text-goal"></textarea>
                         </div>
 
                         <div class="mb-3">
@@ -43,37 +42,16 @@
                             <div class="col">
                                 <div class="form-group">
                                     <label for="start_date" class="font-weight-bold mb-1">Start Date</label>
-                                    <input type="date" name="start_date" class="form-control">
+                                    <input type="date" name="start_date" class="form-control field">
                                 </div>
                             </div>
                             <div class="col">
                                 <div class="form-group">
                                     <label for="end_date" class="font-weight-bold mb-1">End Date</label>
-                                    <input type="date" name="end_date" class="form-control">
+                                    <input type="date" name="end_date" class="form-control field">
                                 </div>
                             </div>
                         </div>
-
-                        <div class="row">                        
-                            <div class="form-group">
-                                <label for="select-status" class="font-weight-bold mb-1">Boards</label>
-                                <div class="row">
-                                    <div class="col">
-                                        <multiselect-filter
-                                            @register="register"
-                                            instance_name="edit_boards_select"
-                                            :title="'Select boards'"
-                                        ></multiselect-filter>
-                                    </div>
-                                    <!-- <div class="col">
-                                        <a href="" type="button" class="btn  btn-secondary mr-2" data-dismiss="modal" aria-label="Close">
-                                            New Board
-                                        </a> 
-                                    </div> -->
-                                </div>
-                            </div>
-                        </div>
-
                     </div>
                 </form>
             </div>
