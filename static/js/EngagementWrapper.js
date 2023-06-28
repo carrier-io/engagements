@@ -301,7 +301,6 @@ const TopEngagementCard = {
                     color: '#32325D'
                 },
             ],
-
             selected_fields: [],
             pre_selected_fields: ['dates', 'health', 'status']
         }
@@ -312,7 +311,11 @@ const TopEngagementCard = {
     computed:{
         all_fields(){
             result = ['dates', 'health', 'goal', 'status']
-            this.engagement.custom_fields.forEach(obj => {
+            custom_fields = this.engagement.custom_fields
+            if (!custom_fields)
+                return result
+
+            custom_fields.forEach(obj => {
                 result.push(obj.field)
             })
             return result
@@ -328,6 +331,8 @@ const TopEngagementCard = {
         },
 
         getDisplayName(status){
+            if(!status)
+                return ''
             return status.charAt(0).toUpperCase() + status.slice(1).toLowerCase().trim().replaceAll('_', ' ')
         },
 
@@ -722,11 +727,11 @@ const EngagementContainer = {
             </engagement-aside>
             <div class="w-100 mr-3" id="eng-container-body">
                 <div class="top-eng-container">
-                    <div v-if="selectedEngagement.id!=-1">
+                    <div v-show="selectedEngagement.id!=-1">
                         <slot name="in_engagement_navbar" :master="this">
                         </slot>
                     </div>
-                    <div v-else>
+                    <div v-show="selectedEngagement.id==-1">
                         <slot name="general_navbar" :master="this">
                         </slot>
                     </div>
