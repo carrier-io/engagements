@@ -10,16 +10,41 @@ const EngagementCreationModal = {
     mounted(){
         $(this.modalId).on("show.bs.modal", () => {
             $(this.formId).get(0).reset();
+
+            $('form#eng-form-create #text-goal').summernote({
+                height: 150,
+                focus: true,
+                toolbar: [
+                    ['style', ['bold', 'italic', 'underline', 'clear']],
+                    ['color', ['color']],
+                    ['fontname', ['fontname']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                  ]
+            });
         });
+
+        $(this.modalId).on('hidden.bs.modal', ()=>{
+            $('form#eng-form-create #text-goal').summernote("reset");
+        })
     },
     methods: {
+        fireEvent(payload){
+            // Create a new custom event
+            const customEvent = new CustomEvent('newEngagement', {
+                detail: payload,
+            });
+            
+            // Dispatch the custom event
+            document.dispatchEvent(customEvent);
+        },
         save() {
             data = $(this.formId).serializeObject();
-            axios.post(engagements_list, data)
+            axios.post(engagements_url, data)
                 .then(() => {
                     this.$emit('added')
                     $(this.modalId).modal("hide");
                     showNotify("SUCCESS", 'Successfully created')
+                    this.fireEvent(data)
                 })
                 .catch(err => {
                     console.log(err)
@@ -90,36 +115,302 @@ const EngagementCreationModal = {
     `
 }
 
+function getHealth(value){
+    healthOpts = {
+        'good': '#139A41',
+        'warning': '#E97912',
+        'bad': '#D71616',
+        'not_defined': '#CAD1D7',
+        'dead': '#32325D',
+    }
+    healthStatus = healthOpts[value]
+    return healthStatus || '#CAD1D7'
+}
+
+const SettingsDropDown = {
+    props: {
+        url: {},
+        list_items: {
+            type: [Array, String],
+            default: []
+        },
+        pre_selected_indexes: {
+            type: [Array, String],
+            default: []
+        },
+        placeholder: {
+            type: String,
+            default: undefined
+        },
+        delimiter: {
+            type: String,
+            default: ','
+        },
+        container_class: {
+            type: String,
+            default: ''
+        },
+        button_class: {
+            type: String,
+            default: 'btn btn-select dropdown-toggle d-inline-flex align-items-center'
+        },
+        variant: {
+            type: String,
+            default: 'with_selected',
+            validator(value) {
+                // The value must match one of these strings
+                return ['with_selected', 'slot'].includes(value)
+            }
+        },
+        return_key: {
+            type: [String, null],
+            default: 'name',
+        },
+        modelValue: {
+            type: Array
+        }
+    },
+    emits: ['change', 'update:modelValue'],
+    delimiters: ['[[', ']]'],
+    data() {
+        return {
+            selectedItems: [],
+        }
+    },
+    mounted() {
+        if (this.list_items.length > 0) {
+            if (typeof this.pre_selected_indexes === 'string') {
+                this.selectedItems = this.pre_selected_indexes.split(this.delimiter)
+            } else {
+                this.selectedItems = this.pre_selected_indexes
+            }
+        }
+    },
+    computed: {
+        li() {
+            if (this.list_items.length > 0) {
+                let listed_items
+                if (typeof this.list_items === 'string') {
+                    listed_items = this.list_items.split(this.delimiter)
+                } else {
+                    listed_items = this.list_items
+                }
+                return listed_items.map((i, index) => {
+                    if (typeof i === 'object') {
+                        return {
+                            ...i,
+                            name: i.name,
+                            idx: index,
+                        }
+                    }
+                    return {
+                        name: i,
+                        idx: index
+                    }
+                })
+            }
+            return []
+        },
+    },
+    methods:{
+        getDisplayName(status){
+            return status.charAt(0).toUpperCase() + status.slice(1).toLowerCase().trim().replaceAll('_', ' ')
+        },
+    },
+    watch: {
+        selectedItems(newValue) {
+            this.$nextTick(() => {
+                let return_value = Object.values(newValue)
+                this.$emit('change', return_value)
+                this.$emit('update:modelValue', return_value)
+            })
+        },
+    },
+    template: `
+    <div class="dropdown_simple-list" 
+        :class="container_class"
+    >
+        <button class="btn-sm btn-icon__sm" type="button"
+            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+            :class="button_class"
+        >
+            <div v-if="variant === 'slot'">
+                <slot name="dropdown_button"></slot>
+            </div>
+            <div v-else>
+                <span class="complex-list_filled" v-if="selectedItems.length > 0">
+                    [[ selectedItems.length ]] selected
+                </span>
+                <span v-else class="complex-list_empty">[[ placeholder ]]</span>
+            </div>
+        </button>
+        <ul class="dropdown-menu"
+            v-if="li.length > 0"
+            @click="$event.stopPropagation()"
+        >
+            <li class="dropdown-menu_item p-0" 
+                v-for="i in li" 
+                :key="i.idx"
+            >
+                <label class="d-flex align-items-center custom-checkbox px-3 py-2">
+                    <input
+                        :value="i.name"
+                        v-model="selectedItems"
+                        type="checkbox"
+                    >
+                    <span v-if="i.html !== undefined" v-html="i.html"></span>
+                    <span v-else class="w-100 d-inline-block ml-3">[[ getDisplayName(i.name) ]]</span>
+                </label>
+            </li>
+        </ul>
+        <div class="dropdown-menu py-0" v-else>
+            <span class="px-3 py-2 d-inline-block">Nothing to select</span>
+        </div>
+    </div>
+    `
+}
+
 const TopEngagementCard = {
     props: ["engagement"],
     data() {
-        return {}
+        return {
+            healthOpts: [
+                {
+                    title: 'Good',
+                    value: 'good',
+                    color: '#139A41'
+                },
+                {
+                    title: 'Warning',
+                    value: 'warning',
+                    color: '#E97912'
+                },
+                {
+                    title: 'Bad',
+                    value: 'bad',
+                    color: '#D71616'
+                },
+                {
+                    title: 'Not defined',
+                    value: 'not_defined',
+                    color: '#CAD1D7'
+                },
+                {
+                    title: 'Dead',
+                    value: 'dead',
+                    color: '#32325D'
+                },
+            ],
+            selected_fields: [],
+            pre_selected_fields: ['dates', 'health', 'status']
+        }
+    },
+    components: {
+        'settings-dropdown': SettingsDropDown,
+    },
+    computed:{
+        all_fields(){
+            result = ['dates', 'health', 'goal', 'status']
+            custom_fields = this.engagement.custom_fields
+            if (!custom_fields)
+                return result
+
+            custom_fields.forEach(obj => {
+                result.push(obj.field)
+            })
+            return result
+        }
     },
     methods: {
+        isSelectedField(field){
+            return this.selected_fields.includes(field)
+        },
+
         stringifyDate(date){
             return date
         },
 
+        getDisplayName(status){
+            if(!status)
+                return ''
+            return status.charAt(0).toUpperCase() + status.slice(1).toLowerCase().trim().replaceAll('_', ' ')
+        },
+
+        displayFieldName(field){
+            return field.replace('_', " ")
+        },
+        
+        getHealth(value){
+            healthStatus = this.healthOpts.find(option => option.value==value)
+            if (!healthStatus){
+                return {
+                    title: 'Not defined',
+                    value: 'not_defined',
+                    color: '#CAD1D7'
+                }
+            }
+            return healthStatus
+        },
+
     },
     template: `
-    <div class="card mt-3 p-2">
-        <div class="card-header mb-0">
-            <div class="d-flex justify-content-between mb-1">
+    <div class="card mt-3 eng-header-element">
+        <div class="top-eng-card-container">
+        
+            <div class="header">
                 <p class="font-h4 font-bold">{{engagement.name}}</p>
-                <button class="btn btn-default btn-xs btn-table btn-icon__xs">
-                    <i class="icon__18x18 icon-settings"></i>
-                </button>
+
+                <settings-dropdown
+                    variant="slot"
+                    button_class="btn btn-default btn-xs btn-table btn-icon__xs"
+                    :list_items="all_fields"
+                    :pre_selected_indexes="pre_selected_fields"
+                    v-model="selected_fields"
+                >
+                    <template #dropdown_button>
+                        <i class="icon__18x18 icon-settings"></i>
+                    </template>
+                </settings-dropdown>
+            
             </div>
-            <div class="d-flex align-items-center">
-                <div class="d-flex align-items-end mr-2">
-                    <i class="icon__16x16 icon-circle-green__16"></i> 
-                    <div class="d-inline-block">Green</div>
+
+            <div class="eng-goal" v-show="isSelectedField('goal')" v-html="engagement.goal">
+            </div>
+
+            <div class="top-description-container">
+                
+                <div class="health-description" v-show="isSelectedField('health')">
+                    <i class="icon__16x16 icon-circle-green__16" :style="'background:' + getHealth(engagement.health).color"></i> 
+                    <div class="d-inline-block">
+                        <span class="desc-font">
+                            {{getHealth(engagement.health).title}}
+                        </span>
+                    </div>
                 </div>
-                <div class="d-flex align-items-center">
-                    <i class="icon__18x18 icon-date-picker mr-1"></i>
-                    <div>
+
+                <div class="top-description" v-show="isSelectedField('dates')">
+                    <i class="icon__18x18 icon-date-picker gray-bg"></i>
+                    <div class="desc-font">
                         {{stringifyDate(engagement.start_date)}} - {{stringifyDate(engagement.end_date)}}
                     </div>
+                </div>
+
+                <div class="top-description" v-show="isSelectedField('status')">
+                    <i class="icon__18x18 icon-status__18 gray-bg"></i> 
+                    <span class="desc-font">
+                        {{getDisplayName(engagement.status)}}
+                    </span>
+                </div>
+            </div>
+
+            <div class="desc-row" v-for="property in engagement.custom_fields" :key="property.id" v-show="isSelectedField(property.field)">                
+                <div class="top-row-label">
+                    <span class="label">
+                        {{displayFieldName(property.field)}}
+                    </span>
+                </div>
+                <div class="top-row-value">
+                    {{property.value}}
                 </div>
             </div>
         </div>
@@ -131,6 +422,11 @@ register_component('engagement-card', TopEngagementCard);
 
 
 const EngagementsListAside = {
+    props: {
+        updatedEngagement:{
+            default: null,
+        }
+    },
     emits: ['engagementSelected', 'engagementsListUpdated'],
     data() {
         return {
@@ -145,17 +441,28 @@ const EngagementsListAside = {
     mounted() {
         this.fetchEngagements().then(data => {
             this.setStateAndEvents(data)
-        })
+        });
+        document.addEventListener('deleteEngagement', this.handleDelete)
+    },
+    watch: {
+        updatedEngagement(value){
+            this.refreshEngagements()
+        }
     },
     components: {
         'engagement-creation-modal': EngagementCreationModal,
     },
     computed: {
         responsiveTableHeight() {
-            return `${(window.innerHeight - 235)}px`;
+            return `${(window.innerHeight - 215)}px`;
         }
     },
     methods: {
+        handleDelete(e){
+            index  = this.selectedEngagementRowIndex - 1;
+            this.selectEngagement(index);
+            this.refreshEngagements();
+        },
         async fetchEngagements() {
             const res = await fetch (`/api/v1/engagements/engagements/${getSelectedProjectId()}`,{
                 method: 'GET',
@@ -201,7 +508,7 @@ const EngagementsListAside = {
             this.SET_ENGAGEMENTS(engagements)
             this.setEvent(engagements)
             this.engagementCount = data['total'];
-            if (data['total'] > index) {
+            if (data['total'] >= index) {
                 this.selectEngagement(index);
             }
         },
@@ -267,7 +574,7 @@ function nameFormatter(value, row){
         return value
     }
     txt = `<div class="pl-2 d-flex align-items-end">
-                <i class="icon__16x16 icon-circle-green__16"></i>
+            <i class="icon__16x16 icon-circle-green__16" style="background: ${getHealth(row.health)}"></i>
                 ${value}
             </div>`
     return txt
@@ -390,12 +697,22 @@ const EngagementContainer = {
                 id: -1,
                 name: ''
             },
+            updatedEngagement: null,
         }
     },
+    mounted(){
+        document.addEventListener('updateEngagement', this.handleEngagementEvent);
+    },
     methods: {
+        handleEngagementEvent(event){
+            const data = event.detail;
+            this.updatedEngagement = data
+        },
+
         updateEngagements(engagements){
             this.engagements = engagements
         },
+
         setSelectedEngagement(engagement){
             this.selectedEngagement = engagement
         }
@@ -403,23 +720,25 @@ const EngagementContainer = {
     template: ` 
         <main class="d-flex align-items-start justify-content-center mb-3">
             <engagement-aside
+                :updatedEngagement="updatedEngagement"
                 @engagementsListUpdated="updateEngagements"
                 @engagementSelected="setSelectedEngagement"
             >
             </engagement-aside>
-            <div class="w-100 mr-3">
-                <div v-if="selectedEngagement.id!=-1">
-                    <slot name="in_engagement_navbar" :master="this">
-                    </slot>
+            <div class="w-100 mr-3" id="eng-container-body">
+                <div class="top-eng-container">
+                    <div v-show="selectedEngagement.id!=-1">
+                        <slot name="in_engagement_navbar" :master="this">
+                        </slot>
+                    </div>
+                    <div v-show="selectedEngagement.id==-1">
+                        <slot name="general_navbar" :master="this">
+                        </slot>
+                    </div>
                 </div>
-                <div v-else>
-                    <slot name="general_navbar" :master="this">
-                    </slot>
-                </div>
-                <div>
-                    <slot name="content" :master="this">
-                    </slot>
-                </div>
+                
+                <slot name="content" :master="this">
+                </slot>  
             </div>
         </main>
     `

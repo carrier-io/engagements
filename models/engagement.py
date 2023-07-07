@@ -1,6 +1,8 @@
 from datetime import datetime
 from uuid import uuid4, UUID
 import sqlalchemy.types as types
+from sqlalchemy.ext.mutable import MutableDict
+from sqlalchemy.dialects.postgresql import JSON
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from sqlalchemy import (
     String, 
@@ -42,20 +44,31 @@ class Engagement(db_tools.AbstractBaseMixin, db.Base):
         'in_progress':'in_progress',
         'done':'done'
     }
+    HEALTH_CHOICES = {
+        'good': 'good',
+        'warning': 'warning',
+        'bad': 'bad',
+        'not_defined': 'not_defined',
+        'dead': 'dead',
+    }
+
     id = Column(Integer, primary_key=True)
     hash_id = Column(String(64), unique=True, nullable=False)
     project_id = Column(Integer, nullable=False)
     name = Column(String(128), nullable=False)
     goal = Column(Text)
     status = Column(ChoiceType(STATUS_CHOICES), nullable=False, default='new')
+    health = Column(ChoiceType(HEALTH_CHOICES), nullable=False, default='not_defined')
     start_date = Column(Date, default=datetime.utcnow)
     end_date = Column(Date)
     active = Column(Boolean, default=True)
+    custom_fields = Column(ARRAY(MutableDict.as_mutable(JSON)), default=[])
     kanban_boards = Column(ARRAY(String(64)), default=[])
 
     @staticmethod
     def list(project_id):
-        return Engagement.query.filter_by(project_id=project_id).all()
+        return Engagement.query.filter_by(project_id=project_id)\
+            .order_by(Engagement.id.asc()).all()
 
     @staticmethod
     def count(project_id):

@@ -1,6 +1,5 @@
 from ..models.engagement import Engagement
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
-from marshmallow import fields
 
 
 class EngagementSchema(SQLAlchemyAutoSchema):

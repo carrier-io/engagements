@@ -23,6 +23,7 @@ import flask_restful  # pylint: disable=E0401
 # from pylon.core.tools import log  # pylint: disable=E0611,E0401
 
 from tools import auth  # pylint: disable=E0401
+from pylon.core.tools import log
 from ...serializers.main import engagements_schema, engagement_schema, engagement_create_schema
 from ...models.engagement import Engagement
 from marshmallow.exceptions import ValidationError
@@ -110,6 +111,7 @@ class API(flask_restful.Resource):  # pylint: disable=R0903
     }})
     def put(self, project_id: int, hash_id: str):
         try:
+            log.info(flask.request.json)
             payload = engagement_schema.load(flask.request.json, partial=True)
         except ValidationError as e:
             return {"ok": False, "error": str(e)}, 400

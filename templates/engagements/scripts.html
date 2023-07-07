@@ -1,20 +1,31 @@
+<script src="{{url_for('engagements.static', filename='js/vendor/summernote-lite.js')}}"></script>
 <script src="{{ url_for('engagements.static', filename='js/vendor/bootstrap-table.min.js') }}"></script>
 <script src="{{ url_for('engagements.static', filename='js/vendor/jquery.serialize-object.min.js') }}"></script>
 <script src="{{ url_for('engagements.static', filename='js/vendor/axios.min.js') }}"></script>
 <script src="{{ url_for('engagements.static', filename='js/dropdown.js') }}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
 <script>
     view_url = '{{ url_for("theme.route_section_subsection_page", section="orch_tool", subsection="engagements", page="view").rstrip('/') }}';
     kanban_url = '{{ url_for("theme.route_section_subsection", section="orch_tool", subsection="kanban") }}'
     boards_url = '{{ url_for("api.v1.kanban.boards", project_id=project_id) }}'
     overview_url = "{{url_for('api.v1.issues.overview', project_id=project_id)}}";
-    engagements_list = "{{ url_for('api.v1.engagements.engagements', project_id=project_id) }}"
     engagements_url = '{{ url_for("api.v1.engagements.engagements", project_id=project_id) }}'
-</script>
 
+    var attachmentUrl = "{{url_for('api.v1.engagements.attachment', project_id=project_id, id='1').rstrip('1')}}"
+    var attachmentsUrl = "{{url_for('api.v1.engagements.attachments', project_id=project_id, engagement_id='1').rstrip('1')}}"
+</script>
 
 <script src="{{ url_for('engagements.static', filename='js/filterToolbarComponent.js') }}"></script>
 <script src="{{ url_for('engagements.static', filename='js/EngagementWrapper.js') }}"></script>
+
+<script src="{{ url_for('engagements.static', filename='js/detailView/attachmentContainer.js') }}"></script>
+<script src="{{ url_for('engagements.static', filename='js/detailView/engagementHeaderContainer.js') }}"></script>
+<script src="{{ url_for('engagements.static', filename='js/detailView/engagementDetailContainer.js') }}"></script>
+<script src="{{ url_for('engagements.static', filename='js/detailView/engagementCard.js') }}"></script>
+
 <script src="{{ url_for('engagements.static', filename='js/engagements.js') }}"></script>
+<script src="{{ url_for('engagements.static', filename='js/engagementBody.js') }}"></script>
 
 
