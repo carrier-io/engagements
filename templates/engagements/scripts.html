@@ -15,6 +15,7 @@
 
     var attachmentUrl = "{{url_for('api.v1.engagements.attachment', project_id=project_id, id='1').rstrip('1')}}"
     var attachmentsUrl = "{{url_for('api.v1.engagements.attachments', project_id=project_id, engagement_id='1').rstrip('1')}}"
+    var logs_url = "{{ url_for('api.v1.audit_logs.logs', project_id=project_id)}}"
 </script>
 
 <script src="{{ url_for('engagements.static', filename='js/filterToolbarComponent.js') }}"></script>
@@ -24,6 +25,7 @@
 <script src="{{ url_for('engagements.static', filename='js/detailView/engagementHeaderContainer.js') }}"></script>
 <script src="{{ url_for('engagements.static', filename='js/detailView/engagementDetailContainer.js') }}"></script>
 <script src="{{ url_for('engagements.static', filename='js/detailView/engagementCard.js') }}"></script>
+<script src="{{ url_for('engagements.static', filename='js/detailView/historyLogs.js') }}"></script>
 
 <script src="{{ url_for('engagements.static', filename='js/engagements.js') }}"></script>
 <script src="{{ url_for('engagements.static', filename='js/engagementBody.js') }}"></script>
