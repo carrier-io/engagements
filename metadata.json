@@ -1,6 +1,6 @@
 {
   "name": "Engagement Plugin",
   "version": "0.1",
-  "depends_on": ["shared", "theme", "auth", "shared_orch"],
+  "depends_on": ["shared", "theme", "auth", "shared_orch", "audit_logs"],
   "init_after": []
 }
