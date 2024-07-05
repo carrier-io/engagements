@@ -610,7 +610,6 @@ const EngagementDetailContainer = {
             >
                 <template #displayValue="{master}">
                     <div class="d-flex align-items-end mr-2">
-                        <i class="icon__16x16 icon-circle-green__16" :style="'background:' + getHealth(master.value).color"></i> 
                         <div class="d-inline-block">{{getHealth(master.value).title}}</div>
                     </div>
                 </template>

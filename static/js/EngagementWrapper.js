@@ -380,7 +380,6 @@ const TopEngagementCard = {
             <div class="top-description-container">
                 
                 <div class="health-description" v-show="isSelectedField('health')">
-                    <i class="icon__16x16 icon-circle-green__16" :style="'background:' + getHealth(engagement.health).color"></i> 
                     <div class="d-inline-block">
                         <span class="desc-font">
                             {{getHealth(engagement.health).title}}
@@ -573,8 +572,7 @@ function nameFormatter(value, row){
     if(allEngagement){
         return value
     }
-    txt = `<div class="pl-2 d-flex align-items-end">
-            <i class="icon__16x16 icon-circle-green__16" style="background: ${getHealth(row.health)}"></i>
+    txt = `<div class="d-flex align-items-end">
                 ${value}
             </div>`
     return txt
