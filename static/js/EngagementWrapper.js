@@ -521,7 +521,7 @@ const EngagementsListAside = {
 
     },
     template: `
-        <aside id="engagement-wrapper" class="m-3 card card-table-sm" style="width: 340px">
+        <aside id="engagement-wrapper" class="m-3 card card-table-sm" style="width: 340px !important; margin-left: 60px !important; min-width: inherit !important;">
             <div class="row px-4 pt-4">
                 <div class="col-8">
                     <h4>Engagements</h4>
