@@ -497,10 +497,10 @@ const EngagementDetailContainer = {
         formatDate(dateStr){
             date = new Date(dateStr)
             day = date.getDate();
-            day = day < 10 ? '0' + day: `${day}`
+         //   day = day < 10 ? '0' + day: `${day}`
             year = date.getFullYear()
-            month = date.getMonth()
-            month = month < 10 ? '0' + month: `${month}`
+            month = date.getMonth() + 1
+          //  month = month < 10 ? '0' + month: `${month}`
             return `${day}.${month}.${year}`
         },
 
@@ -534,7 +534,7 @@ const EngagementDetailContainer = {
                     value: 'new',
                 }, 
                 {
-                    title: 'In porgress',
+                    title: 'In progress',
                     value: 'in_progress',
                 }, 
                 {
