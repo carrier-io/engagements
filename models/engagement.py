@@ -1,4 +1,5 @@
-from datetime import datetime
+import json
+from datetime import datetime, date
 from uuid import uuid4, UUID
 import sqlalchemy.types as types
 from sqlalchemy.ext.mutable import MutableDict
@@ -15,6 +16,7 @@ from sqlalchemy import (
 )
 # from pylon.core.tools import log
 from tools import db_tools, db
+from pylon.core.tools import log
 
 
 class ChoiceType(types.TypeDecorator):
@@ -105,7 +107,21 @@ class Engagement(db_tools.AbstractBaseMixin, db.Base):
             return ok, obj
 
         # updating object
+        changes = {}
         for field, value in data.items():
+            obj_value = getattr(obj, field)
+
+            if value == obj_value:
+                continue
+
+            if type(obj_value) == date:
+                obj_value = str(obj_value)
+                value = str(value)
+            
+            changes[field] = {
+                'old_value': obj_value,
+                'new_value': value
+            }
             if hasattr(obj, field):
                 setattr(obj, field, value)
 
@@ -115,7 +131,7 @@ class Engagement(db_tools.AbstractBaseMixin, db.Base):
             obj.rollback()
             return False, str(e)
 
-        return True, obj
+        return True, obj, changes
 
     @staticmethod
     def remove(project_id: int, hash_id: str):
