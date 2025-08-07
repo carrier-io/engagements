@@ -3,22 +3,22 @@
     instance_name="engagement_container"
     :overview="true"
 >
-    <template #in_engagement_navbar="{master}">
+    <!-- <template #in_engagement_navbar="{master}">
       <overview-card
         url="/api/v1/issues/overview/{{project_id}}"
         :engagement="master.selectedEngagement"
         :engagements_count="master.engagements.length"
       >
       </overview-card>
-    </template>
+    </template> -->
   
-    <template #general_navbar="{master}">
+    <!-- <template #general_navbar="{master}">
       <overview-card
         url="/api/v1/issues/overview/{{project_id}}"
         :engagements_count="master.engagements.length-1"
       >
       </overview-card>
-    </template>
+    </template> -->
 
     <template #content="{master}">
       <engagement-body
