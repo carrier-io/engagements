@@ -25,6 +25,7 @@ from pylon.core.tools import web  # pylint: disable=E0611,E0401
 from tools import rpc_tools, db  # pylint: disable=E0401
 
 from plugins.engagements.models.attachments import Attachment
+from ..utils.logs import log_attachment_create, log_attachment_delete, log_attachment_update
 
 
 class RPC:  # pylint: disable=E1101,R0903
@@ -45,6 +46,12 @@ class RPC:  # pylint: disable=E1101,R0903
                 db.session.add(attachment)
                 db.session.flush()
                 result.append(attachment)
+                log_attachment_create(
+                    self.context.event_manager,
+                    project_id,
+                    attach['engagement_id'],
+                    attachment.id
+                )
             db.session.commit()
         except Exception as e:
             log.error(e)
@@ -60,11 +67,28 @@ class RPC:  # pylint: disable=E1101,R0903
         if not attachment:
             return {"ok":False, "error":'Not Found'}
 
+        changes = {}
         for field, value in payload.items():
+            obj_value = getattr(attachment, field)
+
+            if value == obj_value:
+                continue
+            
+            changes[field] = {
+                'old_value': obj_value,
+                'new_value': value,
+            }
             if hasattr(attachment, field):
                 setattr(attachment, field, value)
 
         db.session.commit()
+        log_attachment_update(
+            self.context.event_manager,
+            project_id,
+            attachment.engagement_id,
+            id,
+            changes,
+        )
         return {"ok":True, "item": attachment}
 
     @web.rpc("engagements_delete_attachment", "delete_attachment")
@@ -82,5 +106,10 @@ class RPC:  # pylint: disable=E1101,R0903
             'engagements_attachment_deleted', 
             {'attachment': attachment}
         )
-        
+        log_attachment_delete(
+            self.context.event_manager,
+            project_id,
+            attachment.engagement_id,
+            id,
+        )
         return {"ok":True}

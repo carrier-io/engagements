@@ -3,6 +3,7 @@ const EngagementBody = {
     components: {
         'engagements-table': EngagementsTable,
         'engagements-card-container': EngagementCardContainer,
+        'history-logs': HistoryLogs,
     },
     computed: {
         isDetail(){
@@ -19,6 +20,10 @@ const EngagementBody = {
         v-if="isDetail"
         :engagement="engagement"
     ></engagement-card-container>
+    <history-logs
+        v-if="isDetail"
+        :engagement="engagement"
+    ></history-logs>
     `
 };
 

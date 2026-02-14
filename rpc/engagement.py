@@ -17,9 +17,10 @@
 
 """ RPC """
 # from pylon.core.tools import log  # pylint: disable=E0611,E0401
-from pylon.core.tools import web  # pylint: disable=E0611,E0401
+from pylon.core.tools import web, log  # pylint: disable=E0611,E0401
 from tools import rpc_tools, db   # pylint: disable=E0401
 from ..models.engagement import Engagement
+from ..utils.logs import log_create_engagement, log_delete_engagement, log_update_engagement
 
 
 class RPC:  # pylint: disable=E1101,R0903
@@ -39,16 +40,27 @@ class RPC:  # pylint: disable=E1101,R0903
         result = {"ok": ok}
         field = "item" if ok else "error"
         result[field] = obj
+        if ok:
+            log_create_engagement(
+                self.context.event_manager, obj.project_id, obj.id
+            )
         return result
 
 
     @web.rpc("engagement_update_engagement", "update_engagement")
     @rpc_tools.wrap_exceptions(RuntimeError)
     def update_engagement(self, project_id: int, hash_id: str, data: dict):
-        ok, obj = Engagement.update(project_id, hash_id, data)
+        ok, obj, changes = Engagement.update(project_id, hash_id, data)
         result = {"ok": ok}
         field = "item" if ok else "error"
         result[field] = obj
+        if ok:
+            log_update_engagement(
+                self.context.event_manager,
+                project_id,
+                obj.id,
+                changes,
+            )
         return result
 
 
@@ -65,6 +77,12 @@ class RPC:  # pylint: disable=E1101,R0903
                 'engagement': hash_id
             }
         )
+        if ok:
+            log_delete_engagement(
+                self.context.event_manager, 
+                project_id, 
+                obj.id
+            )
         return result
 
 
@@ -92,6 +110,14 @@ class RPC:  # pylint: disable=E1101,R0903
 
 
 
+def get_changes(payload, obj: Engagement):
+    changes = {}
+    for key in payload.keys():
+        changes[key] = {
+            'old_value': getattr(obj, key),
+            'new_value': payload[key],
+        }
+    return changes
 
 
 
